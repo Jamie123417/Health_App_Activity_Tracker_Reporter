@@ -24,6 +24,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = "Register"
 
         btnRegister = findViewById(R.id.reg_btn_register)
 

@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = "Login"
 
         entUserName = findViewById(R.id.entUserName)
         entPassword = findViewById(R.id.entPassword)
@@ -54,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-        fun validInput(): Boolean {
+        private fun validInput(): Boolean {
             if (entUserName.text.toString() == "") {
                 entUserName.error = "Please Enter UserName"
                 return false

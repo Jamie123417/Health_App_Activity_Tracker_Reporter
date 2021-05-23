@@ -18,6 +18,7 @@ class Homepage : AppCompatActivity() {
         setContentView(R.layout.activity_homepage)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = "Homepage"
 
         btnLogOut = findViewById(R.id.btnLogOut)
 

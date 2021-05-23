@@ -18,6 +18,7 @@ class TrackerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = "Usage Tracker"
 
 
     }
