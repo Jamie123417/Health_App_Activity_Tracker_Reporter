@@ -58,7 +58,7 @@ class AppsActivity : AppCompatActivity() {
     }
 
     //object for each apps variables
-    class AppList(var appName: String, var appIcon: Drawable, var appPackages: String, var dateLastUsed: String)
+    class AppList(var appName: String, var appIcon: Drawable, var appPackages: String, var dateLastUsed: Long)
 
     private fun getInstalledApps(): MutableList<AppList> {
         //fills array on installed apps
@@ -81,27 +81,27 @@ class AppsActivity : AppCompatActivity() {
         return pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
     }
 
-    private fun getAppDateLastUsed(packageName: String): String {
+    private fun getAppDateLastUsed(packageName: String): Long {
         val cal = Calendar.getInstance()
         cal.add(Calendar.YEAR, -1)
         val usageStatsManager : UsageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
-//        var customUsageStats = usageStatsManager.queryAndAggregateUsageStats(cal.timeInMillis, System.currentTimeMillis())
         val customUsageStats: List<UsageStats> = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_BEST, cal.timeInMillis, System.currentTimeMillis())
         for (i in customUsageStats.indices) {
             val pacName = customUsageStats[i].packageName.toString()
             if (packageName == pacName) {
                 val dateLastUsed = customUsageStats[i].lastTimeUsed
-                return ("Last Time Used " + convertTime(dateLastUsed))
+//                return ("Last Time Used " + convertTime(dateLastUsed))
+                return (dateLastUsed)
             }
         }
-        return ""
+        return 0
     }
 
-    private fun convertTime(lastTimeUsed: Long): String {
+/*    private fun convertTime(lastTimeUsed: Long): String {
         val date: Date = Date(lastTimeUsed)
         val format = SimpleDateFormat("dd/mm/yyyy hh:mm a", Locale.ENGLISH)
         return format.format(date)
-    }
+    }*/
 
     @Suppress("DEPRECATION")
     private fun checkUsageStatsPermission(): Boolean{
@@ -135,8 +135,14 @@ class AppsActivity : AppCompatActivity() {
             icon.setImageDrawable(customizedList[position].appIcon)
             appName.text = customizedList[position].appName
             packageName.text = customizedList[position].appPackages
-            appDateLastUsed.text = customizedList[position].dateLastUsed
+            appDateLastUsed.text = ("Last Time Used " + convertTime(customizedList[position].dateLastUsed))
             return view
+        }
+
+        private fun convertTime(lastTimeUsed: Long): String {
+            val date: Date = Date(lastTimeUsed)
+            val format = SimpleDateFormat("dd/mm/yyyy hh:mm a", Locale.ENGLISH)
+            return format.format(date)
         }
     }
 }
