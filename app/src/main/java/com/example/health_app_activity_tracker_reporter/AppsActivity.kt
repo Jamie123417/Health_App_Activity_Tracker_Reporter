@@ -1,5 +1,7 @@
 package com.example.health_app_activity_tracker_reporter
 
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
 import android.app.AppOpsManager
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
@@ -7,16 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,7 +24,7 @@ class AppsActivity : AppCompatActivity() {
     private lateinit var listViewUserApps: ListView
     private lateinit var textViewAppsNo: TextView
     private var installedApps: MutableList<AppList> = ArrayList()
-    var appAdapter: AppListAdapter? = null
+    private var appAdapter: AppListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,15 +51,12 @@ class AppsActivity : AppCompatActivity() {
                 Toast.makeText(this, installedApps[position].appPackages, Toast.LENGTH_SHORT).show()
                 startActivity(intent)
             }
-        }else {
+        } else {
                 startActivity(Intent(Settings.ACTION_APP_USAGE_SETTINGS))
         }
     }
 
-    //object for each apps variables
-    class AppList(var appName: String, var appIcon: Drawable, var appPackages: String, var dateLastUsed: Long)
-
-    private fun getInstalledApps(): MutableList<AppList> {
+    fun getInstalledApps(): MutableList<AppList> {
         //fills array on installed apps
         var appsList: MutableList<AppList> = ArrayList()
         val appListPacks: List<PackageInfo> = packageManager.getInstalledPackages(0)
@@ -105,10 +101,9 @@ class AppsActivity : AppCompatActivity() {
 
     @Suppress("DEPRECATION")
     private fun checkUsageStatsPermission(): Boolean{
-        var appOpsManager: AppOpsManager? = null
-        var mode: Int = 0
+        var appOpsManager: AppOpsManager?
         appOpsManager = getSystemService(Context.APP_OPS_SERVICE)!! as AppOpsManager
-        mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
+        var mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
         return  mode == AppOpsManager.MODE_ALLOWED
     }
 
@@ -130,18 +125,18 @@ class AppsActivity : AppCompatActivity() {
             val view : View = LayoutInflater.from(appCtx).inflate(R.layout.custom_apps_layout, parent, false)
             icon = view.findViewById(R.id.app_icon)
             appName = view.findViewById(R.id.list_app_name)
-            packageName = view.findViewById(R.id.app_package)
+            packageName = view.findViewById(R.id.app_time_notification)
             appDateLastUsed = view.findViewById(R.id.app_date_last_used)
             icon.setImageDrawable(customizedList[position].appIcon)
             appName.text = customizedList[position].appName
             packageName.text = customizedList[position].appPackages
-            appDateLastUsed.text = ("Last Time Used " + convertTime(customizedList[position].dateLastUsed))
+            appDateLastUsed.text = ("Last Time Used: " + convertTime(customizedList[position].dateLastUsed))
             return view
         }
 
         private fun convertTime(lastTimeUsed: Long): String {
             val date: Date = Date(lastTimeUsed)
-            val format = SimpleDateFormat("dd/mm/yyyy hh:mm a", Locale.ENGLISH)
+            val format = SimpleDateFormat("dd/mm/yyyy HH:mm", Locale.ENGLISH)
             return format.format(date)
         }
     }

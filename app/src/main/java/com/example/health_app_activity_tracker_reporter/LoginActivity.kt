@@ -33,14 +33,14 @@ class LoginActivity : AppCompatActivity() {
         btmLogin.setOnClickListener() {
             if (validInput()) {
                 // Input is valid, here send data to your server
-                val email: String = entUserName.getText().toString()
-                val password: String = entPassword.getText().toString()
+                val email: String = entUserName.text.toString()
+                val password: String = entPassword.text.toString()
                 Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Homepage::class.java)
                 startActivity(intent)
             } else {
-                // for quick testing purposes to remove after before relase
-                if (entUserName.getText().toString() == adminUserName && entPassword.getText().toString() == adminPassword) {
+                // for quick testing purposes - remove before release
+                if (entUserName.text.toString() == adminUserName && entPassword.getText().toString() == adminPassword) {
                     Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show()
                     val intent = Intent(this, Homepage::class.java)
                     startActivity(intent)

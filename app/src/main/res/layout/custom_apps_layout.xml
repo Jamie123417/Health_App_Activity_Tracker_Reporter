@@ -9,12 +9,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="5dp">
+
         <ImageView
             android:id="@+id/app_icon"
             android:layout_width="48dp"
-            android:layout_height="48dp"/>
+            android:layout_height="48dp"
+            android:contentDescription="Display Apps Icon" />
         <LinearLayout
-            android:layout_marginLeft="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -24,10 +25,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="App Name"/>
             <TextView
-                android:id="@+id/app_package"
+                android:id="@+id/app_time_notification"
                 android:text="App Package Name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.health_app_activity_tracker_reporter">
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter">
+        <activity android:name=".AddAppToTracker"></activity>
         <activity
             android:name=".AppsActivity"
             android:parentActivityName=".Homepage">
@@ -38,6 +42,7 @@
             android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/app_t_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="App Icon" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/list_app_t_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="App Name"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/app_t_date_last_used"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/app_t_date_last_used"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date Last Used"
+                app:layout_constraintBottom_toTopOf="@+id/app_t_time_notification"
+                app:layout_constraintTop_toBottomOf="@+id/list_app_t_name" />
+
+            <TextView
+                android:id="@+id/app_t_time_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time Untill Next Notification"
+                app:layout_constraintBottom_toTopOf="@+id/app_t_notification_limit"
+                app:layout_constraintTop_toBottomOf="@+id/app_t_date_last_used" />
+
+            <TextView
+                android:id="@+id/app_t_notification_limit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="Maximim Time Until Notification"
+                app:layout_constraintTop_toBottomOf="@+id/app_t_time_notification" />
+
+            <Button
+                android:id="@+id/btn_T_Edit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                app:layout_constraintEnd_toStartOf="@+id/btn_T_Delete"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/app_t_notification_limit" />
+
+            <Button
+                android:id="@+id/btn_T_Delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btn_T_Edit"
+                app:layout_constraintTop_toBottomOf="@+id/app_t_notification_limit" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

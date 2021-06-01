@@ -3,7 +3,6 @@ package com.example.health_app_activity_tracker_reporter
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -26,26 +25,25 @@ class RegisterActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = "Register"
 
-        btnRegister = findViewById(R.id.reg_btn_register)
-
+        btnRegister = findViewById(R.id.reg_btn_add_app)
         userName = findViewById(R.id.regUserName)
         firstName = findViewById(R.id.regFirstName)
-        surname = findViewById(R.id.regSurname)
-        emailAddress = findViewById(R.id.regEmailAddress)
+        surname = findViewById(R.id.regLastName)
+        emailAddress = findViewById(R.id.regEmail)
         password1 = findViewById(R.id.regPassword1)
         password2 = findViewById(R.id.regPassword2)
 
         btnRegister.setOnClickListener{
             if (validateInput()) {
-                // Input is valid, here send data to your server
-                val Username: String = userName.getText().toString()
+                // Input is valid, here send data to server
+                val userName: String = userName.getText().toString()
                 val firstName: String = firstName.getText().toString()
                 val surname: String = surname.getText().toString()
                 val email: String = emailAddress.getText().toString()
                 val password: String = password1.getText().toString()
                 val repeatPassword: String = password2.getText().toString()
                 Toast.makeText(this, "entRepeatPassword Success", Toast.LENGTH_SHORT).show()
-                // Here you can call you API
+                // Call API
                 val intent = Intent(this, LoginActivity::class.java)
                 startActivity(intent)
             }
@@ -99,25 +97,8 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
 
-    fun isEmailValid(email: String): Boolean {
+    private fun isEmailValid(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
-/*
-    fun register(v: View?) {
-        if (validateInput()) {
-            // Input is valid, here send data to your server
-            val Username: String = userName.getText().toString()
-            val firstName: String = firstName.getText().toString()
-            val surname: String = surname.getText().toString()
-            val email: String = emailAddress.getText().toString()
-            val password: String = password1.getText().toString()
-            val repeatPassword: String = password2.getText().toString()
-            Toast.makeText(this, "entRepeatPassword Success", Toast.LENGTH_SHORT).show()
-            // Here you can call you API
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
-    }
-    */
 }
 
