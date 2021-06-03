@@ -24,6 +24,7 @@ class Homepage : AppCompatActivity() {
         val btnActivitySettings = findViewById<LinearLayout>(R.id.activitySettings)
         val btnActivityApps = findViewById<LinearLayout>(R.id.activityApps)
         val btnActivityTracker = findViewById<LinearLayout>(R.id.activityTracker)
+        val btnAddAppToTracker = findViewById<LinearLayout>(R.id.activityAddAppsToTracker)
 
         btnActivitySettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
@@ -35,6 +36,10 @@ class Homepage : AppCompatActivity() {
         }
         btnActivityTracker.setOnClickListener {
             val intent = Intent(this, TrackerActivity::class.java)
+            startActivity(intent)
+        }
+        btnAddAppToTracker.setOnClickListener {
+            val intent = Intent(this, AddAppToTracker::class.java)
             startActivity(intent)
         }
 
