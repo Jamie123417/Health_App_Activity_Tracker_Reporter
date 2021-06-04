@@ -1,11 +1,11 @@
 package com.example.health_app_activity_tracker_reporter
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class Homepage : AppCompatActivity() {
 
@@ -19,6 +19,8 @@ class Homepage : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = "Homepage"
 
+        val userEmail = intent.getStringExtra("email").toString()
+
         btnLogOut = findViewById(R.id.btnLogOut)
 
         val btnActivitySettings = findViewById<LinearLayout>(R.id.activitySettings)
@@ -28,6 +30,7 @@ class Homepage : AppCompatActivity() {
 
         btnActivitySettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
+            intent.putExtra("EMAIL", userEmail)
             startActivity(intent)
         }
         btnActivityApps.setOnClickListener {

@@ -49,14 +49,14 @@ class RegisterActivity : AppCompatActivity() {
         if (!validateInput()) {
             return
         }
-        if (!databaseResources.checkUser(regEmailAddress.text.toString().trim { it <= ' ' }) ) {
+        if (!databaseResources.checkUser(regEmailAddress.text.toString().trim()) ) {
             val user = User(0, "temp", "temp", "temp", "temp", "temp")
             user.id = (databaseResources.getDBSize() + 1)
-            user.userName = regUserName.text.toString().trim { it <= ' ' }
-            user.firstName = regUserName.text.toString().trim { it <= ' ' }
-            user.lastName = regUserName.text.toString().trim { it <= ' ' }
-            user.email = regEmailAddress.text.toString().trim { it <= ' ' }
-            user.password = regPassword1.text.toString().trim { it <= ' ' }
+            user.userName = regUserName.text.toString().trim()
+            user.firstName = regUserName.text.toString().trim()
+            user.lastName = regUserName.text.toString().trim()
+            user.email = regEmailAddress.text.toString().trim()
+            user.password = regPassword1.text.toString().trim()
             databaseResources.addUser(user)
             Toast.makeText(this, getString(R.string.success_message), Toast.LENGTH_SHORT).show()
             val intentRegister = Intent(applicationContext, LoginActivity::class.java)

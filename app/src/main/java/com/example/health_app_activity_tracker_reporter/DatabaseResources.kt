@@ -2,10 +2,9 @@ package com.example.health_app_activity_tracker_reporter
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import java.sql.DriverManager
-import java.sql.ResultSet
 import java.util.*
 
 
@@ -34,7 +33,7 @@ class DatabaseResources (context: Context) : SQLiteOpenHelper(context, DATABASE_
         database.close()
     }
 
-    val allUser: List<User>
+    val getAllUsers: List<User>
         get() {
             val columns = arrayOf(COLUMN_USER_ID, COLUMN_USER_NAME, COLUMN_USER_FIRST_NAME, COLUMN_USER_LAST_NAME, COLUMN_USER_EMAIL, COLUMN_USER_PASSWORD)
             // sorting
@@ -107,4 +106,26 @@ class DatabaseResources (context: Context) : SQLiteOpenHelper(context, DATABASE_
         database.close()
         return selector.columnCount
     }
+
+    fun getUserDetails(userEmail: String): User {
+        var userDetails = User(0, "temp", "temp", "temp", "temp", "temp")
+        val database = this.readableDatabase
+
+        val query = "SELECT * FROM " + TABLE_USER.toString() + " WHERE " + COLUMN_USER_EMAIL.toString() + " = '" + userEmail.toString() + "'"
+        val cursor: Cursor = database.rawQuery(query, null)
+//        val cursor = database.query(TABLE_USER, null, selection, selectionArgs, null, null, null)
+        if (cursor.moveToFirst()) {
+            do {
+                userDetails.id = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID))
+                userDetails.userName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_NAME))
+                userDetails.email = userEmail
+                userDetails.firstName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_FIRST_NAME))
+                userDetails.lastName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_LAST_NAME))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        database.close()
+        return userDetails
+    }
+
 }

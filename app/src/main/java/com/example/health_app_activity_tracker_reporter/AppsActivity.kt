@@ -93,12 +93,6 @@ class AppsActivity : AppCompatActivity() {
         return 0
     }
 
-/*    private fun convertTime(lastTimeUsed: Long): String {
-        val date: Date = Date(lastTimeUsed)
-        val format = SimpleDateFormat("dd/mm/yyyy hh:mm a", Locale.ENGLISH)
-        return format.format(date)
-    }*/
-
     @Suppress("DEPRECATION")
     private fun checkUsageStatsPermission(): Boolean{
         var appOpsManager: AppOpsManager?

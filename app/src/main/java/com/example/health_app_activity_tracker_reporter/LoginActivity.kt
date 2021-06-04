@@ -43,9 +43,9 @@ class LoginActivity : AppCompatActivity() {
         if (!validInput()) {
             return
         }
-        if (databaseResources.checkUser(entEmail.text.toString().trim { it <= ' ' })) {
+        if (databaseResources.checkUser(entEmail.text.toString().trim())) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
-            intentLogin.putExtra("EMAIL", entEmail.text.toString().trim { it <= ' ' })
+            intentLogin.putExtra("EMAIL", entEmail.text.toString().trim())
             startActivity(intentLogin)
         } else {
             Toast.makeText(this, "@string/error_valid_email_password", Toast.LENGTH_SHORT).show()
