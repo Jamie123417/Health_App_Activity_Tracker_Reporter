@@ -11,10 +11,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_activity_tracker"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter">
-        <activity android:name=".AddAppToTracker"
+        <activity android:name=".AddAppToTrackerActivity"
             android:parentActivityName=".Homepage">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,7 +46,6 @@
             android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

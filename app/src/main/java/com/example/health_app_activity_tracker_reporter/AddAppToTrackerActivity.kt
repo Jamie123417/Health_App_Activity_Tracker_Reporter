@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
 
-class AddAppToTracker : AppCompatActivity() {
+class AddAppToTrackerActivity : AppCompatActivity() {
     private lateinit var appNameSpinner: Spinner
     private lateinit var weeks:EditText
     private lateinit var days:EditText

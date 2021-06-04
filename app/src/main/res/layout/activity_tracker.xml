@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".TrackerActivity"
-    android:theme="@style/CustomTheme">
+    tools:context=".TrackerActivity">
 
     <TextView
         android:id="@+id/appsTCounter"

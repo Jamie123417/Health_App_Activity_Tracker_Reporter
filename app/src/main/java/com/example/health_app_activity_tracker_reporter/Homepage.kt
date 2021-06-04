@@ -39,7 +39,7 @@ class Homepage : AppCompatActivity() {
             startActivity(intent)
         }
         btnAddAppToTracker.setOnClickListener {
-            val intent = Intent(this, AddAppToTracker::class.java)
+            val intent = Intent(this, AddAppToTrackerActivity::class.java)
             startActivity(intent)
         }
 

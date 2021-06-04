@@ -8,11 +8,4 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="CustomTheme" parent="Theme.Design.Light.NoActionBar">
-        <item name="colorPrimary">#ffa600</item>
-        <item name="colorPrimaryDark">#ffd000</item>
-        <item name="colorAccent">#a6fffc</item>
-        <item name="backgroundColor">#a6fffc</item>
-    </style>
 </resources>
