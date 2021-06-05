@@ -19,7 +19,7 @@ class Homepage : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         title = "Homepage"
 
-        val userEmail = intent.getStringExtra("email").toString()
+//        val userEmail = intent.getStringExtra("email").toString()
 
         btnLogOut = findViewById(R.id.btnLogOut)
 
@@ -30,7 +30,7 @@ class Homepage : AppCompatActivity() {
 
         btnActivitySettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
-            intent.putExtra("EMAIL", userEmail)
+//            intent.putExtra("EMAIL", userEmail)
             startActivity(intent)
         }
         btnActivityApps.setOnClickListener {
@@ -51,10 +51,10 @@ class Homepage : AppCompatActivity() {
             startActivity(intent)
         }
 
-        if(intent.getStringExtra("ID_EXTRA") != null){
-            textName = findViewById(R.id.regFirstName)
-            textName.text = intent.getStringExtra("ID_EXTRA")
-        }
+//        if(intent.getStringExtra("ID_EXTRA") != null){
+//            textName = findViewById(R.id.regFirstName)
+//            textName.text = intent.getStringExtra("ID_EXTRA")
+//        }
     }
 
 

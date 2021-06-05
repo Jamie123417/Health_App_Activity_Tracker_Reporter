@@ -1,25 +1,30 @@
 package com.example.health_app_activity_tracker_reporter
 
-import android.content.Intent
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.Toast
-import java.sql.DriverManager
-import java.sql.ResultSet
+import com.google.android.material.snackbar.Snackbar
 
 
 class RegisterActivity : AppCompatActivity() {
-    lateinit var regUserName: EditText
-    lateinit var regFirstName: EditText
-    lateinit var regLastName: EditText
-    lateinit var regEmailAddress:EditText
-    lateinit var regPassword1:EditText
-    lateinit var regPassword2:EditText
+    private lateinit var regUserName: EditText
+    private lateinit var regFirstName: EditText
+    private lateinit var regLastName: EditText
+    private lateinit var regEmailAddress:EditText
+    private lateinit var regPassword1:EditText
+    private lateinit var regPassword2:EditText
     private lateinit var btnRegister : Button
     private val minPassLen = 5
+    private lateinit var scrollRegister : ScrollView
     private lateinit var databaseResources: DatabaseResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +32,7 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        title = "Create an Account"
 
         btnRegister = findViewById(R.id.reg_btn_add_app)
         regUserName = findViewById(R.id.regUserName)
@@ -35,22 +41,20 @@ class RegisterActivity : AppCompatActivity() {
         regEmailAddress = findViewById(R.id.regEmail)
         regPassword1 = findViewById(R.id.regPassword1)
         regPassword2 = findViewById(R.id.regPassword2)
+        scrollRegister = findViewById(R.id.scrollViewRegister)
 
         databaseResources = DatabaseResources(this)
 
         btnRegister.setOnClickListener {
-            when (it.id) {
-                R.id.btn_Register -> postDataToSQLite()
+            if (validateInput()) {
+                postDataToSQLite()
             }
         }
     }
 
     private fun postDataToSQLite() {
-        if (!validateInput()) {
-            return
-        }
-        if (!databaseResources.checkUser(regEmailAddress.text.toString().trim()) ) {
-            val user = User(0, "temp", "temp", "temp", "temp", "temp")
+        if (databaseResources.registerCheckUser(regEmailAddress.text.toString())) {
+            val user = User(1, "temp", "temp", "temp", "temp", "temp")
             user.id = (databaseResources.getDBSize() + 1)
             user.userName = regUserName.text.toString().trim()
             user.firstName = regUserName.text.toString().trim()
@@ -58,54 +62,63 @@ class RegisterActivity : AppCompatActivity() {
             user.email = regEmailAddress.text.toString().trim()
             user.password = regPassword1.text.toString().trim()
             databaseResources.addUser(user)
-            Toast.makeText(this, getString(R.string.success_message), Toast.LENGTH_SHORT).show()
+            Snackbar.make(scrollRegister, getString(R.string.success_message), Snackbar.LENGTH_LONG).show()
             val intentRegister = Intent(applicationContext, LoginActivity::class.java)
             startActivity(intentRegister)
         } else {
-            Toast.makeText(this, getString(R.string.error_email_exists), Toast.LENGTH_SHORT).show()
-
+            Snackbar.make(scrollRegister, getString(R.string.error_email_exists), Snackbar.LENGTH_LONG).show()
         }
     }
 
     // Checking if the input in form is valid
     private fun validateInput(): Boolean {
-        if (regUserName.text.toString().equals("")) {
-            regUserName.setError("Please Enter User Name")
+        if (regUserName.text.toString() == "") {
+//            regUserName.error = ("Please Enter User Name")
+            Snackbar.make(scrollRegister, getString(R.string.hint_name), Snackbar.LENGTH_LONG).show()
             return false
         }
-        if (regFirstName.text.toString().equals("")) {
-            regFirstName.setError("Please Enter Your First Name")
+        if (regFirstName.text.toString() == "") {
+//            regFirstName.error = ("Please Enter Your First Name")
+            Snackbar.make(scrollRegister, getString(R.string.hint_first_name), Snackbar.LENGTH_LONG).show()
             return false
         }
-        if (regLastName.text.toString().equals("")) {
-            regLastName.setError("Please Enter Your Surname")
+        if (regLastName.text.toString() == "") {
+//            regLastName.error = ("Please Enter Your Surname")
+            Snackbar.make(scrollRegister, getString(R.string.hint_last_name), Snackbar.LENGTH_LONG).show()
             return false
         }
-        if (regEmailAddress.text.toString().equals("")) {
-            regEmailAddress.setError("Please Enter Email")
+        if (regEmailAddress.text.toString() == "") {
+//            regEmailAddress.error = ("Please Enter Email")
+            Snackbar.make(scrollRegister, getString(R.string.hint_email), Snackbar.LENGTH_LONG).show()
             return false
         }
-        if (regPassword1.text.toString().equals("")) {
-            regPassword1.setError("Please Enter Password")
+        if (regPassword1.text.toString() == "") {
+//            regPassword1.error = ("Please Enter Password")
+            Snackbar.make(scrollRegister, getString(R.string.hint_password), Snackbar.LENGTH_LONG).show()
             return false
         }
-        if (regPassword2.text.toString().equals("")) {
-            regPassword2.setError("Please Enter Repeat Password")
+        if (regPassword2.text.toString() == "") {
+//            regPassword2.error = ("Please Enter Repeat Password")
+            Snackbar.make(scrollRegister, getString(R.string.hint_confirm_password), Snackbar.LENGTH_LONG).show()
             return false
         }
         // checking the proper email format
         if (!isEmailValid(regEmailAddress.text.toString())) {
-            regEmailAddress.setError("Please Enter Valid Email")
+//            regEmailAddress.error = ("Please Enter Valid Email")
+            Snackbar.make(scrollRegister, getString(R.string.valid_email), Snackbar.LENGTH_LONG).show()
             return false
         }
         // checking minimum password Length
         if (regPassword1.text.length < minPassLen) {
-            regPassword1.setError("Password Length must be more than " + minPassLen + "characters")
+//            regPassword1.error = ("Password Length must be more than " + minPassLen + "characters")
+            val len = "Password Length must be more than " + minPassLen + "characters"
+            Snackbar.make(scrollRegister, len, Snackbar.LENGTH_LONG).show()
             return false
         }
         // Checking if repeat password is same
-        if (!regPassword1.text.toString().equals(regPassword2.text.toString())) {
-            regPassword2.setError("Password does not match")
+        if (regPassword1.text.toString() != regPassword2.text.toString()) {
+//            regPassword2.error = "Password does not match"
+            Snackbar.make(scrollRegister, getString(R.string.error_password_match), Snackbar.LENGTH_LONG).show()
             return false
         }
         return true
@@ -115,4 +128,13 @@ class RegisterActivity : AppCompatActivity() {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    //Closes the keyboard on click
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm: InputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 }

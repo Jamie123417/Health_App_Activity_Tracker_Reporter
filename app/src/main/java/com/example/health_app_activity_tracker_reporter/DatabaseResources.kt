@@ -5,127 +5,175 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import java.util.*
+import com.example.health_app_activity_tracker_reporter.User
 
 
-class DatabaseResources (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    private val createUserTable = ("CREATE TABLE " + TABLE_USER + "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_USER_NAME + " TEXT," + COLUMN_USER_EMAIL + " TEXT," + COLUMN_USER_PASSWORD + " TEXT" + ")")
-    private val deleteUserTable = "DROP TABLE IF EXISTS " + TABLE_USER
+class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    override fun onCreate(database: SQLiteDatabase) {
-        database.execSQL(createUserTable)
+    override fun onCreate(db: SQLiteDatabase) {
+/*        val createUserTable = "CREATE TABLE IF NOT EXISTS " + TABLE_USER + "(" +
+                COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_USERNAME + " TEXT, " +
+                COLUMN_USER_FIRST_NAME + " TEXT, " +
+                COLUMN_USER_LAST_NAME + " TEXT, " +
+                COLUMN_USER_EMAIL + " TEXT, " +
+                COLUMN_USER_PASSWORD + " TEXT " + ")"*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_USER + "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_USER_FIRST_NAME + " TEXT, " + COLUMN_USER_LAST_NAME + " TEXT, " + COLUMN_USER_EMAIL + " TEXT, " + COLUMN_USER_PASSWORD + " TEXT " + ")")
     }
 
-    override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        database.execSQL(deleteUserTable)
-        onCreate(database)
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        val deleteUserTable = "DROP TABLE IF EXISTS " + TABLE_USER
+        db.execSQL(deleteUserTable)
+        onCreate(db)
+        db.close()
+    }
+
+    fun addAdmin() {
+        val db = this.writableDatabase
+        val cv = ContentValues()
+        cv.put(COLUMN_USERNAME, "admin")
+        cv.put(COLUMN_USER_FIRST_NAME, "john")
+        cv.put(COLUMN_USER_LAST_NAME, "smith")
+        cv.put(COLUMN_USER_EMAIL, "admin@email.com")
+        cv.put(COLUMN_USER_PASSWORD, "password")
+        db.insert(TABLE_USER, null, cv)
+        db.close()
     }
 
     fun addUser(user: User) {
-        val database = this.writableDatabase
+        val db = this.writableDatabase
         val values = ContentValues()
-        values.put(COLUMN_USER_NAME, user.userName)
+        values.put(COLUMN_USERNAME, user.userName)
         values.put(COLUMN_USER_FIRST_NAME, user.firstName)
         values.put(COLUMN_USER_LAST_NAME, user.lastName)
         values.put(COLUMN_USER_EMAIL, user.email)
         values.put(COLUMN_USER_PASSWORD, user.password)
-        database.insert(TABLE_USER, null, values)
-        database.close()
+        db.insert(TABLE_USER, null, values)
+        db.close()
     }
-
-    val getAllUsers: List<User>
-        get() {
-            val columns = arrayOf(COLUMN_USER_ID, COLUMN_USER_NAME, COLUMN_USER_FIRST_NAME, COLUMN_USER_LAST_NAME, COLUMN_USER_EMAIL, COLUMN_USER_PASSWORD)
-            // sorting
-            val sort = COLUMN_USER_NAME + " ASC"
-            val userList: MutableList<User> = ArrayList()
-            val database = this.readableDatabase
-            // query
-            val selector = database.query(TABLE_USER, columns,null, null, null,  null,sort)
-            if (selector.moveToFirst()) {
-                do {
-                    val user = User(0, "temp", "temp", "temp", "temp", "temp")
-                    user.id = selector.getString(selector.getColumnIndex(COLUMN_USER_ID)).toInt()
-                    user.userName = selector.getString(selector.getColumnIndex(COLUMN_USER_NAME))
-                    user.email = selector.getString(selector.getColumnIndex(COLUMN_USER_EMAIL))
-                    user.password = selector.getString(selector.getColumnIndex(COLUMN_USER_PASSWORD))
-                    userList.add(user)
-                } while (selector.moveToNext())
-            }
-            selector.close()
-            database.close()
-            return userList
-        }
 
     fun updateUser(user: User) {
-        val database = this.writableDatabase
         val values = ContentValues()
-        values.put(COLUMN_USER_NAME, user.userName)
+        values.put(COLUMN_USER_ID, user.id)
+        values.put(COLUMN_USERNAME, user.userName)
+        values.put(COLUMN_USER_FIRST_NAME, user.firstName)
+        values.put(COLUMN_USER_LAST_NAME, user.lastName)
         values.put(COLUMN_USER_EMAIL, user.email)
         values.put(COLUMN_USER_PASSWORD, user.password)
-        database.update(TABLE_USER,values,COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
-        database.close()
+        val db = this.writableDatabase
+        db.update(TABLE_USER,values,COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
+        db.close()
     }
-
     fun deleteUser(user: User) {
         val delUser = this.writableDatabase
         delUser.delete(TABLE_USER, COLUMN_USER_ID + " = ?", arrayOf(java.lang.String.valueOf(user.id)))
         delUser.close()
     }
 
-    fun checkUser(email: String): Boolean {
+    fun registerCheckUser(email: String): Boolean {
         val columns = arrayOf(COLUMN_USER_ID)
-        val dataBase = this.readableDatabase
-        val selection = COLUMN_USER_EMAIL + " = ?"
+        val db = this.readableDatabase
+        val selection = "$COLUMN_USER_EMAIL = ?"
         val selectionArgs = arrayOf(email)
-        val cursor = dataBase.query(TABLE_USER, columns, selection, selectionArgs,null,null,null)
+        val cursor = db.query(
+            TABLE_USER, //Table to query
+            columns,        //columns to return
+            selection,      //columns for the WHERE clause
+            selectionArgs,  //The values for the WHERE clause
+            null,  //group the rows
+            null,   //filter by row groups
+            null)  //The sort order
         val cursorCount = cursor.count
         cursor.close()
-        dataBase.close()
+        db.close()
         return cursorCount > 0
+    }
+
+    fun loginCheckUser(userName: String, password: String): Boolean {
+        val columns = arrayOf(COLUMN_USER_ID)
+        val db = this.readableDatabase
+        val selection = "$COLUMN_USERNAME = ? AND $COLUMN_USER_PASSWORD = ?"
+        val selectionArgs = arrayOf(userName, password)
+        val cursor = db.query(TABLE_USER, columns, selection, selectionArgs,null,null,null)
+        val cursorCount = cursor.count
+        cursor.close()
+        db.close()
+        return cursorCount > 0
+    }
+
+    fun loginCheckUserEmail(email: String, password: String): Boolean {
+        val columns = arrayOf(COLUMN_USER_ID)
+        val db = this.readableDatabase
+        val selection = "$COLUMN_USER_EMAIL = ? AND $COLUMN_USER_PASSWORD = ?"
+        val selectionArgs = arrayOf(email, password)
+        val cursor = db.query(TABLE_USER, columns, selection, selectionArgs,null,null,null)
+        val cursorCount = cursor.count
+        cursor.close()
+        db.close()
+        return cursorCount > 0
+    }
+
+    fun getDBSize(): Int {
+        val db = this.readableDatabase
+        val columns = arrayOf(COLUMN_USER_ID)
+        val selector = db.query(TABLE_USER, columns,null, null, null,  null, null)
+        val size = selector.columnCount
+        selector.close()
+        db.close()
+        return size
+    }
+
+    fun findUserDetailsName(userName: String): User? {
+        val query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USERNAME + " = '" + userName + "'"
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(query, null)
+        var user: User? = null
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            val id = Integer.parseInt(cursor.getString(0))
+            val name = cursor.getString(1)
+            val firstName = cursor.getString(2)
+            val lastName = cursor.getString(3)
+            val email = cursor.getString(4)
+            val password = cursor.getString(4)
+            user = User(id, name, firstName, lastName, email, password)
+            cursor.close()
+        }
+        db.close()
+        return user
+    }
+
+    fun findUserDetailsEmail(email: String): User {
+        val query = ("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = '" + email + "'")
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(query, null)
+        var user: User? = null
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            val id = Integer.parseInt(cursor.getString(0))
+            val name = cursor.getString(1)
+            val firstName = cursor.getString(2)
+            val lastName = cursor.getString(3)
+            val userEmail = cursor.getString(4)
+            val password = cursor.getString(4)
+            user = User(id, name, firstName, lastName, userEmail, password)
+            cursor.close()
+        }
+        db.close()
+        return user
     }
 
     companion object {
         private const val DATABASE_VERSION = 1
-        private const val DATABASE_NAME = "UserManager.database"
-        private const val TABLE_USER = "user"
+        private const val DATABASE_NAME = "UserManager.db"
+        private const val TABLE_USER = "users"
         private const val COLUMN_USER_ID = "user_id"
-        private const val COLUMN_USER_NAME = "user_name"
+        private const val COLUMN_USERNAME = "user_name"
         private const val COLUMN_USER_FIRST_NAME = "user_first_name"
-        private const val COLUMN_USER_LAST_NAME = "user_Last_name"
+        private const val COLUMN_USER_LAST_NAME = "user_last_name"
         private const val COLUMN_USER_EMAIL = "user_email"
         private const val COLUMN_USER_PASSWORD = "user_password"
     }
-
-    fun getDBSize(): Int {
-        val database = this.readableDatabase
-        val columns = arrayOf(COLUMN_USER_ID, COLUMN_USER_EMAIL, COLUMN_USER_NAME, COLUMN_USER_PASSWORD)
-        val sort = COLUMN_USER_NAME + " ASC"
-        val selector = database.query(TABLE_USER, columns,null, null, null,  null,sort)
-        selector.close()
-        database.close()
-        return selector.columnCount
-    }
-
-    fun getUserDetails(userEmail: String): User {
-        var userDetails = User(0, "temp", "temp", "temp", "temp", "temp")
-        val database = this.readableDatabase
-
-        val query = "SELECT * FROM " + TABLE_USER.toString() + " WHERE " + COLUMN_USER_EMAIL.toString() + " = '" + userEmail.toString() + "'"
-        val cursor: Cursor = database.rawQuery(query, null)
-//        val cursor = database.query(TABLE_USER, null, selection, selectionArgs, null, null, null)
-        if (cursor.moveToFirst()) {
-            do {
-                userDetails.id = cursor.getInt(cursor.getColumnIndex(COLUMN_USER_ID))
-                userDetails.userName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_NAME))
-                userDetails.email = userEmail
-                userDetails.firstName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_FIRST_NAME))
-                userDetails.lastName = cursor.getString(cursor.getColumnIndex(COLUMN_USER_LAST_NAME))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        database.close()
-        return userDetails
-    }
-
 }

@@ -15,7 +15,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var textViewAccLName: TextView
 
     private lateinit var userDetails: User
-    private lateinit var databaseResources: DatabaseResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +31,8 @@ class SettingsActivity : AppCompatActivity() {
 
         val userEmail = intent.getStringExtra("email").toString()
 
-        databaseResources = DatabaseResources(this)
-        userDetails = databaseResources.getUserDetails(userEmail)
+        val databaseResources = DatabaseResources(applicationContext)
+//        userDetails = databaseResources.getUserDetails(userEmail)
 
         listViewAccDetails.setOnItemClickListener { parent, view, position, id ->
                 textViewAccUName.text = userDetails.userName
@@ -45,12 +44,5 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-/*    private fun setUserDetails(userDetails: List<User>) {
-        if (userDetails.email == ) {
-            val intentLogin = Intent(applicationContext, Homepage::class.java)
-            intentLogin.putExtra("EMAIL", entEmail.text.toString().trim { it <= ' ' })
-            startActivity(intentLogin)
-        }
-    }*/
 
 }

@@ -1,75 +1,95 @@
 package com.example.health_app_activity_tracker_reporter
 
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Patterns
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
+import android.widget.ScrollView
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 
 class LoginActivity : AppCompatActivity() {
-
-    private lateinit var entEmail: EditText
+    private lateinit var entEmailUserName: EditText
     private lateinit var entPassword: EditText
     private lateinit var btnLogin : Button
     private lateinit var btnSignUp : Button
-
+    private lateinit var scrollLogin : ScrollView
     private lateinit var databaseResources: DatabaseResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        entEmail = findViewById(R.id.entEmailName)
+        entEmailUserName = findViewById(R.id.entEmailName)
         entPassword = findViewById(R.id.entPassword)
         btnLogin = findViewById(R.id.btn_LogIn)
         btnSignUp = findViewById(R.id.btn_Register)
+        scrollLogin = findViewById(R.id.scrollViewLogin)
 
-        databaseResources = DatabaseResources(this)
+        databaseResources = DatabaseResources(applicationContext)
+        databaseResources.addAdmin()
 
         btnLogin.setOnClickListener  {
-            verifySQ(databaseResources)
+            if (validInput() ) {
+                val emailUserName = entEmailUserName.text.toString()
+                val password = entPassword.text.toString()
+                verifySQ(emailUserName, password)
+            }
         }
-
         btnSignUp.setOnClickListener {
             val intentRegistration = Intent(applicationContext, RegisterActivity::class.java)
             startActivity(intentRegistration)
         }
-
     }
 
-    private fun verifySQ(databaseResources: DatabaseResources) {
-        if (!validInput()) {
-            return
-        }
-        if (databaseResources.checkUser(entEmail.text.toString().trim())) {
+    private fun verifySQ(emailUserName: String, password: String) {
+        if (databaseResources.loginCheckUser(emailUserName, password)) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
-            intentLogin.putExtra("EMAIL", entEmail.text.toString().trim())
+            intentLogin.putExtra("Username", entEmailUserName.text.toString().trim { it <= ' ' })
+            Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show()
+            startActivity(intentLogin)
+        } else if (databaseResources.loginCheckUserEmail(emailUserName, password)) {
+            val intentLogin = Intent(applicationContext, Homepage::class.java)
+            intentLogin.putExtra("EMAIL", entEmailUserName.text.toString())
+            Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show();
             startActivity(intentLogin)
         } else {
-            Toast.makeText(this, "@string/error_valid_email_password", Toast.LENGTH_SHORT).show()
+            Snackbar.make(scrollLogin, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show()
+          return
         }
     }
+//    private fun verifyFromSQLite(databaseResources: DatabaseResources, entEmailUserName: String, entPassword: String) : Boolean {
+//        return databaseResources.loginCheckUser(entEmailUserName, entPassword)
+//    }
 
     private fun validInput(): Boolean {
         val minPassLen = 5
-        if (entEmail.text.toString() == "") {
-            entEmail.error = "@string/error_message_email"
+        if (entEmailUserName.text.toString() == "") {
+            Snackbar.make(scrollLogin, getString(R.string.enter_your_email), Snackbar.LENGTH_LONG).show()
             return false
         } else if (entPassword.text.toString() == "") {
-            entPassword.error = "@string/error_valid_email_password"
+            Snackbar.make(scrollLogin, getString(R.string.enter_your_password), Snackbar.LENGTH_LONG).show()
+            return false
+        } else if (entPassword.text.toString() == "") {
+            Snackbar.make(scrollLogin, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show()
             return false
         } else if (entPassword.text.length < minPassLen) {
-            entPassword.error = "The Password must be more than " + minPassLen + "characters"
-            return false
-        } else if (!isEmailValid(entEmail.text.toString())){
+            val mess = "The Password must be more than " + minPassLen + "characters"
+            Snackbar.make(scrollLogin, mess, Snackbar.LENGTH_LONG).show();
             return false
         }
         return true
     }
 
-    private fun isEmailValid(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm: InputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 }
