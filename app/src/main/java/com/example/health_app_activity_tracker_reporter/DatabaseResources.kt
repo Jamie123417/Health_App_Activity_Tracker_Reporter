@@ -2,30 +2,61 @@ package com.example.health_app_activity_tracker_reporter
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
-import java.util.*
-import com.example.health_app_activity_tracker_reporter.User
-
 
 class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase) {
-/*        val createUserTable = "CREATE TABLE IF NOT EXISTS " + TABLE_USER + "(" +
-                COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_USERNAME + " TEXT, " +
-                COLUMN_USER_FIRST_NAME + " TEXT, " +
-                COLUMN_USER_LAST_NAME + " TEXT, " +
-                COLUMN_USER_EMAIL + " TEXT, " +
-                COLUMN_USER_PASSWORD + " TEXT " + ")"*/
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_USER + "(" + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_USERNAME + " TEXT, " + COLUMN_USER_FIRST_NAME + " TEXT, " + COLUMN_USER_LAST_NAME + " TEXT, " + COLUMN_USER_EMAIL + " TEXT, " + COLUMN_USER_PASSWORD + " TEXT " + ")")
+        if (!ifTableExists(db, TABLE_USERS)){
+            try {
+                db.execSQL("CREATE TABLE " + TABLE_USERS + "(" +
+                        COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_USERNAME + " TEXT, " +
+                        COLUMN_USER_FIRST_NAME + " TEXT, " +
+                        COLUMN_USER_LAST_NAME + " TEXT, " +
+                        COLUMN_USER_EMAIL + " TEXT, " +
+                        COLUMN_USER_PASSWORD + " TEXT " + ")")
+            } catch (e: Exception){
+                return
+            }
+        }
+
+        if (!ifTableExists(db, TABLE_TRACKERS)){
+            try {
+                db.execSQL("CREATE TABLE " + TABLE_TRACKERS + "(" +
+                        COLUMN_APP_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_APP_NAME + " TEXT, " +
+                        COLUMN_APP_PACKAGES + " TEXT, " +
+                        COLUMN_APP_DLU + " INTEGER, " +
+                        COLUMN_APP_INTERVAL + " INTEGER " + ")")
+            } catch (e: Exception){
+                return
+            }
+        }
+    }
+
+    private fun ifTableExists(db: SQLiteDatabase, tableName: String): Boolean {
+        try {
+            val cursor = db.query(tableName, null, null, null, null, null, null)
+            if (cursor != null) {
+                if (cursor.count > 0) {
+                    cursor.close()
+                    return true
+                }
+                cursor.close()
+            }
+        } catch (e: Exception) {
+            return false
+        }
+        return false
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        val deleteUserTable = "DROP TABLE IF EXISTS " + TABLE_USER
+        val deleteUserTable = "DROP TABLE IF EXISTS " + TABLE_USERS
         db.execSQL(deleteUserTable)
+        val deleteTrackersTable = "DROP TABLE IF EXISTS " + TABLE_TRACKERS
+        db.execSQL(deleteTrackersTable)
         onCreate(db)
         db.close()
     }
@@ -38,7 +69,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         cv.put(COLUMN_USER_LAST_NAME, "smith")
         cv.put(COLUMN_USER_EMAIL, "admin@email.com")
         cv.put(COLUMN_USER_PASSWORD, "password")
-        db.insert(TABLE_USER, null, cv)
+        db.insert(TABLE_USERS, null, cv)
         db.close()
     }
 
@@ -50,7 +81,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         values.put(COLUMN_USER_LAST_NAME, user.lastName)
         values.put(COLUMN_USER_EMAIL, user.email)
         values.put(COLUMN_USER_PASSWORD, user.password)
-        db.insert(TABLE_USER, null, values)
+        db.insert(TABLE_USERS, null, values)
         db.close()
     }
 
@@ -63,13 +94,13 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         values.put(COLUMN_USER_EMAIL, user.email)
         values.put(COLUMN_USER_PASSWORD, user.password)
         val db = this.writableDatabase
-        db.update(TABLE_USER,values,COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
+        db.update(TABLE_USERS,values,COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
         db.close()
     }
     fun deleteUser(user: User) {
-        val delUser = this.writableDatabase
-        delUser.delete(TABLE_USER, COLUMN_USER_ID + " = ?", arrayOf(java.lang.String.valueOf(user.id)))
-        delUser.close()
+        val db = this.writableDatabase
+        db.delete(TABLE_USERS, COLUMN_USER_ID + " = ?", arrayOf(java.lang.String.valueOf(user.id)))
+        db.close()
     }
 
     fun registerCheckUser(email: String): Boolean {
@@ -77,26 +108,19 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         val db = this.readableDatabase
         val selection = "$COLUMN_USER_EMAIL = ?"
         val selectionArgs = arrayOf(email)
-        val cursor = db.query(
-            TABLE_USER, //Table to query
-            columns,        //columns to return
-            selection,      //columns for the WHERE clause
-            selectionArgs,  //The values for the WHERE clause
-            null,  //group the rows
-            null,   //filter by row groups
-            null)  //The sort order
+        val cursor = db.query(TABLE_USERS, columns, selection, selectionArgs,null,null,null)
         val cursorCount = cursor.count
         cursor.close()
         db.close()
         return cursorCount > 0
     }
 
-    fun loginCheckUser(userName: String, password: String): Boolean {
+    fun loginCheckUserName(userName: String, password: String): Boolean {
         val columns = arrayOf(COLUMN_USER_ID)
         val db = this.readableDatabase
         val selection = "$COLUMN_USERNAME = ? AND $COLUMN_USER_PASSWORD = ?"
         val selectionArgs = arrayOf(userName, password)
-        val cursor = db.query(TABLE_USER, columns, selection, selectionArgs,null,null,null)
+        val cursor = db.query(TABLE_USERS, columns, selection, selectionArgs,null,null,null)
         val cursorCount = cursor.count
         cursor.close()
         db.close()
@@ -108,25 +132,25 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         val db = this.readableDatabase
         val selection = "$COLUMN_USER_EMAIL = ? AND $COLUMN_USER_PASSWORD = ?"
         val selectionArgs = arrayOf(email, password)
-        val cursor = db.query(TABLE_USER, columns, selection, selectionArgs,null,null,null)
+        val cursor = db.query(TABLE_USERS, columns, selection, selectionArgs,null,null,null)
         val cursorCount = cursor.count
         cursor.close()
         db.close()
         return cursorCount > 0
     }
 
-    fun getDBSize(): Int {
+    fun getUsersdbSize(): Int {
         val db = this.readableDatabase
         val columns = arrayOf(COLUMN_USER_ID)
-        val selector = db.query(TABLE_USER, columns,null, null, null,  null, null)
+        val selector = db.query(TABLE_USERS, columns,null, null, null,  null, null)
         val size = selector.columnCount
         selector.close()
         db.close()
         return size
     }
 
-    fun findUserDetailsName(userName: String): User? {
-        val query = "SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USERNAME + " = '" + userName + "'"
+    fun findUserDetailsUserName(userName: String): User? {
+        val query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = '" + userName + "'"
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
         var user: User? = null
@@ -146,10 +170,10 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     }
 
     fun findUserDetailsEmail(email: String): User {
-        val query = ("SELECT * FROM " + TABLE_USER + " WHERE " + COLUMN_USER_EMAIL + " = '" + email + "'")
+        val query = ("SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = '" + email + "'")
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
-        var user: User? = null
+        var user: User = User(1, "", "", "", "", "")
         if (cursor.moveToFirst()) {
             cursor.moveToFirst()
             val id = Integer.parseInt(cursor.getString(0))
@@ -165,15 +189,50 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return user
     }
 
+    fun addTracker(tracker: Tracker) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_APP_NAME, tracker.appName)
+        values.put(COLUMN_APP_PACKAGES, tracker.appPackages)
+        values.put(COLUMN_APP_DLU, tracker.dateLastUsed)
+        values.put(COLUMN_APP_INTERVAL, tracker.trackingInterval)
+        db.insert(TABLE_TRACKERS, null, values)
+        db.close()
+    }
+
+    fun deleteTracker(tracker: Tracker) {
+        val db = this.writableDatabase
+        db.delete(TABLE_TRACKERS, COLUMN_APP_NAME + " = ?", arrayOf(tracker.appName))
+        db.close()
+    }
+
+    fun checkAppTracking(appName: String): Boolean {
+        val columns = arrayOf(COLUMN_APP_ID)
+        val db = this.readableDatabase
+        val selection = "$COLUMN_APP_NAME = ?"
+        val selectionArgs = arrayOf(appName)
+        val cursor = db.query(TABLE_TRACKERS, columns, selection, selectionArgs,null,null,null)
+        val cursorCount = cursor.count
+        cursor.close()
+        db.close()
+        return cursorCount > 0
+    }
+
     companion object {
         private const val DATABASE_VERSION = 1
-        private const val DATABASE_NAME = "UserManager.db"
-        private const val TABLE_USER = "users"
+        private const val DATABASE_NAME = "ActivityTracker.db"
+        private const val TABLE_USERS = "users"
         private const val COLUMN_USER_ID = "user_id"
         private const val COLUMN_USERNAME = "user_name"
         private const val COLUMN_USER_FIRST_NAME = "user_first_name"
         private const val COLUMN_USER_LAST_NAME = "user_last_name"
         private const val COLUMN_USER_EMAIL = "user_email"
         private const val COLUMN_USER_PASSWORD = "user_password"
+        private const val TABLE_TRACKERS = "trackers"
+        private const val COLUMN_APP_ID = "app_id"
+        private const val COLUMN_APP_NAME = "app_name"
+        private const val COLUMN_APP_PACKAGES = "app_packages"
+        private const val COLUMN_APP_DLU = "app_date_last_used"
+        private const val COLUMN_APP_INTERVAL = "app_tracking_interval"
     }
 }

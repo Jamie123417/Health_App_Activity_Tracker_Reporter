@@ -1,6 +1,5 @@
 package com.example.health_app_activity_tracker_reporter
 
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import android.content.Intent
@@ -11,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -53,9 +51,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun postDataToSQLite() {
-        if (databaseResources.registerCheckUser(regEmailAddress.text.toString())) {
+        if (!databaseResources.registerCheckUser(regEmailAddress.text.toString())) {
             val user = User(1, "temp", "temp", "temp", "temp", "temp")
-            user.id = (databaseResources.getDBSize() + 1)
+            user.id = (databaseResources.getUsersdbSize() + 1)
             user.userName = regUserName.text.toString().trim()
             user.firstName = regUserName.text.toString().trim()
             user.lastName = regUserName.text.toString().trim()

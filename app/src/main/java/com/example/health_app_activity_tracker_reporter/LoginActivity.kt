@@ -23,6 +23,8 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         entEmailUserName = findViewById(R.id.entEmailName)
         entPassword = findViewById(R.id.entPassword)
         btnLogin = findViewById(R.id.btn_LogIn)
@@ -30,10 +32,12 @@ class LoginActivity : AppCompatActivity() {
         scrollLogin = findViewById(R.id.scrollViewLogin)
 
         databaseResources = DatabaseResources(applicationContext)
-        databaseResources.addAdmin()
 
         btnLogin.setOnClickListener  {
             if (validInput() ) {
+                if(!databaseResources.registerCheckUser("admin")){
+                    databaseResources.addAdmin()
+                }
                 val emailUserName = entEmailUserName.text.toString()
                 val password = entPassword.text.toString()
                 verifySQ(emailUserName, password)
@@ -46,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun verifySQ(emailUserName: String, password: String) {
-        if (databaseResources.loginCheckUser(emailUserName, password)) {
+        if (databaseResources.loginCheckUserName(emailUserName, password)) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
             intentLogin.putExtra("Username", entEmailUserName.text.toString().trim { it <= ' ' })
             Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show()
@@ -54,16 +58,13 @@ class LoginActivity : AppCompatActivity() {
         } else if (databaseResources.loginCheckUserEmail(emailUserName, password)) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
             intentLogin.putExtra("EMAIL", entEmailUserName.text.toString())
-            Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show();
+            Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show()
             startActivity(intentLogin)
         } else {
             Snackbar.make(scrollLogin, getString(R.string.error_valid_email_password), Snackbar.LENGTH_LONG).show()
           return
         }
     }
-//    private fun verifyFromSQLite(databaseResources: DatabaseResources, entEmailUserName: String, entPassword: String) : Boolean {
-//        return databaseResources.loginCheckUser(entEmailUserName, entPassword)
-//    }
 
     private fun validInput(): Boolean {
         val minPassLen = 5
@@ -78,7 +79,7 @@ class LoginActivity : AppCompatActivity() {
             return false
         } else if (entPassword.text.length < minPassLen) {
             val mess = "The Password must be more than " + minPassLen + "characters"
-            Snackbar.make(scrollLogin, mess, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(scrollLogin, mess, Snackbar.LENGTH_LONG).show()
             return false
         }
         return true

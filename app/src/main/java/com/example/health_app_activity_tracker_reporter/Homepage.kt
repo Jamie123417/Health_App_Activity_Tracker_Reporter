@@ -16,7 +16,7 @@ class Homepage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_homepage)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
         title = "Homepage"
 
 //        val userEmail = intent.getStringExtra("email").toString()

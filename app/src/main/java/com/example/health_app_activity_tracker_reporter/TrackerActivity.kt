@@ -21,8 +21,9 @@ class TrackerActivity : AppCompatActivity() {
 
     private lateinit var listViewTrackedApps: ListView
     private lateinit var textViewTrackedAppsNo: TextView
-    var trackedAppsList: MutableList<TrackerList> = ArrayList()
+    var trackedApps: MutableList<Tracker> = ArrayList()
     private var appTrackerAdapter: AppTrackingListAdapter? = null
+    private lateinit var databaseResources: DatabaseResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,18 +32,19 @@ class TrackerActivity : AppCompatActivity() {
 
         if(checkUsageStatsPermission()) {
             title = "Apps Currently Tracking"
+            val appListInstance = AppsActivity()
+            val installedAppsList: MutableList<AppList> = appListInstance.getInstalledApps()
+            databaseResources = DatabaseResources(applicationContext)
             listViewTrackedApps = findViewById(R.id.tracked_app_list)
             textViewTrackedAppsNo = findViewById(R.id.appsTCounter)
-
-
 
         } else {
             startActivity(Intent(Settings.ACTION_APP_USAGE_SETTINGS))
         }
     }
 
-    fun addTracker(newTracker: ArrayList<TrackerList>): Boolean {
-        trackedAppsList.add(newTracker[1])
+    fun addTracker(newTracker: ArrayList<Tracker>): Boolean {
+        trackedApps.add(newTracker[1])
         return true
     }
 
@@ -54,7 +56,7 @@ class TrackerActivity : AppCompatActivity() {
         return  mode == AppOpsManager.MODE_ALLOWED
     }
 
-    class AppTrackingListAdapter(private val appCtx: Context, private val customizedList: MutableList<TrackerList>) : BaseAdapter() {
+    class AppTrackingListAdapter(private val appCtx: Context, private val customized: MutableList<Tracker>) : BaseAdapter() {
         private lateinit var icon: ImageView
         private lateinit var appName: TextView
         private lateinit var appDateLastUsed: TextView
@@ -63,7 +65,7 @@ class TrackerActivity : AppCompatActivity() {
         private lateinit var editTracker: Button
         private lateinit var deleteTracker: Button
         override fun getCount(): Int {
-            return customizedList.size
+            return customized.size
         }
         override fun getItem(position: Int): Any {
             return position
@@ -80,11 +82,11 @@ class TrackerActivity : AppCompatActivity() {
             appNotificationLimit = view.findViewById(R.id.app_t_notification_limit)
             editTracker = view.findViewById(R.id.btn_T_Edit)
             deleteTracker = view.findViewById(R.id.btn_T_Delete)
-            icon.setImageDrawable(customizedList[position].appIcon)
-            appName.text = customizedList[position].appName
-            appDateLastUsed.text = ("Last Time Used: " + convertTime(customizedList[position].dateLastUsed))
-            appUntilNotification.text = ("Time Until " + appName + "needs to be used: "+ convertTime(timeUntilNotification(customizedList[position].dateLastUsed, customizedList[position].TrackingReportFreq)))
-            appNotificationLimit.text = ("Frequency "+ appName + "needs to be used by: "+ customizedList[position].TrackingReportFreq)
+//            icon.setImageDrawable(customized[position].appIcon)
+            appName.text = customized[position].appName
+            appDateLastUsed.text = ("Last Time Used: " + convertTime(customized[position].dateLastUsed))
+//            appUntilNotification.text = ("Time Until " + appName + "needs to be used: "+ convertTime(timeUntilNotification(customized[position].dateLastUsed, customized[position].trackingInterval)))
+            appNotificationLimit.text = ("Frequency "+ appName + "needs to be used by: "+ customized[position].trackingInterval)
             return view
         }
 

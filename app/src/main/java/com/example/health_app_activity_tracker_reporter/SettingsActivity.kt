@@ -32,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
         val userEmail = intent.getStringExtra("email").toString()
 
         val databaseResources = DatabaseResources(applicationContext)
-//        userDetails = databaseResources.getUserDetails(userEmail)
+        userDetails = databaseResources.findUserDetailsEmail(userEmail)
 
         listViewAccDetails.setOnItemClickListener { parent, view, position, id ->
                 textViewAccUName.text = userDetails.userName
