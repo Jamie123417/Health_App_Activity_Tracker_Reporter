@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 import android.R.menu
 import android.view.Menu
+import com.google.android.material.snackbar.Snackbar
 
 class AddAppToTrackerActivity : AppCompatActivity() {
     private lateinit var appNameSpinner: Spinner
@@ -62,12 +63,11 @@ class AddAppToTrackerActivity : AppCompatActivity() {
             }
         }
     }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
 
+    private fun postTrackerDataToSQLite() {
+
+    }
+    
     private fun validInput(): Boolean {
         if ((weeks.text.toString().toInt() + days.text.toString().toInt() + hours.text.toString().toInt()) != 0) {
             return true
@@ -76,6 +76,12 @@ class AddAppToTrackerActivity : AppCompatActivity() {
         } else {
             return false
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
     }
 
 }
