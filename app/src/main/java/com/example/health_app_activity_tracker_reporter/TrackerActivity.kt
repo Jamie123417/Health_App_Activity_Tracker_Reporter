@@ -1,12 +1,13 @@
 package com.example.health_app_activity_tracker_reporter
 
-import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
-import android.os.Process
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -21,39 +22,49 @@ class TrackerActivity : AppCompatActivity() {
 
     private lateinit var listViewTrackedApps: ListView
     private lateinit var textViewTrackedAppsNo: TextView
-    var trackedApps: MutableList<Tracker> = ArrayList()
-    private var appTrackerAdapter: AppTrackingListAdapter? = null
     private lateinit var databaseResources: DatabaseResources
+    private lateinit var appListInstance: AppsActivity
+    private var trackedAppsList: MutableList<Tracker> = ArrayList()
+    private var installedApps: MutableList<AppList> = ArrayList()
+    private var appTrackerAdapter: AppTrackingListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        appListInstance = AppsActivity()
 
-        if(checkUsageStatsPermission()) {
-            title = "Apps Currently Tracking"
-            val appListInstance = AppsActivity()
-            val installedAppsList: MutableList<AppList> = appListInstance.getInstalledApps()
+        if(appListInstance.checkUsageStatsPermission()) {
             databaseResources = DatabaseResources(applicationContext)
             listViewTrackedApps = findViewById(R.id.tracked_app_list)
             textViewTrackedAppsNo = findViewById(R.id.appsTCounter)
-
         } else {
-            startActivity(Intent(Settings.ACTION_APP_USAGE_SETTINGS))
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            intent.data = Uri.fromParts("package", packageName, null)
+            Toast.makeText(this, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()
+            startActivity(intent)
         }
     }
-
-    fun addTracker(newTracker: ArrayList<Tracker>): Boolean {
-        trackedApps.add(newTracker[1])
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    @Suppress("DEPRECATION")
-    private fun checkUsageStatsPermission(): Boolean{
-        var appOpsManager: AppOpsManager?
-        appOpsManager = getSystemService(Context.APP_OPS_SERVICE)!! as AppOpsManager
-        var mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
-        return  mode == AppOpsManager.MODE_ALLOWED
+    fun getTrackers(): MutableList<Tracker>  {
+        return databaseResources.getAllTrackers()
+    }
+
+    fun getAppIcon(trackedAppName: String): Drawable {
+        installedApps = appListInstance.getInstalledApps()
+        try {
+            for (i in installedApps.indices) {
+                if (trackedAppName == installedApps[i].appName)
+                    return installedApps[i].appIcon
+            }
+        } catch (e: Exception) {
+        }
+        return null as Drawable
     }
 
     class AppTrackingListAdapter(private val appCtx: Context, private val customized: MutableList<Tracker>) : BaseAdapter() {
@@ -83,14 +94,14 @@ class TrackerActivity : AppCompatActivity() {
             editTracker = view.findViewById(R.id.btn_T_Edit)
             deleteTracker = view.findViewById(R.id.btn_T_Delete)
 //            icon.setImageDrawable(customized[position].appIcon)
-            appName.text = customized[position].appName
-            appDateLastUsed.text = ("Last Time Used: " + convertTime(customized[position].dateLastUsed))
+            appName.text = customized[position].appTName
+            appDateLastUsed.text = ("Last Time Used: " + convertTime(customized[position].appTdateLastUsed))
 //            appUntilNotification.text = ("Time Until " + appName + "needs to be used: "+ convertTime(timeUntilNotification(customized[position].dateLastUsed, customized[position].trackingInterval)))
-            appNotificationLimit.text = ("Frequency "+ appName + "needs to be used by: "+ customized[position].trackingInterval)
+            appNotificationLimit.text = ("Frequency "+ appName + "needs to be used by: "+ customized[position].appTrackingInterval)
             return view
         }
 
-        private fun timeUntilNotification(dateLastUsed: Long, trackingReportFreq: Array<Int>): Long {
+/*        private fun timeUntilNotification(dateLastUsed: Long, trackingReportFreq: Array<Int>): Long {
             val current : Long = System.currentTimeMillis()
             val timeGap = dateLastUsed - current
             val trackingReportFreqDays = trackingReportFreq[1].toString()
@@ -101,10 +112,11 @@ class TrackerActivity : AppCompatActivity() {
             val tFormat = SimpleDateFormat("dd HH:mm", Locale.ENGLISH)
             val timeInString = (trackingReportFreqDays + trackingReportHours + ":" + trackingReportMinutes)
             val timeInDate = tFormat.parse(timeInString).time
-
+*//*            val dt = Date()
+            LocalDateTime.from(dt.toInstant()).plusDays(1)*//*
             var timeUntilNotification = (timeGap - timeInDate)
             return timeUntilNotification
-        }
+        }*/
 
         private fun convertTime(lastTimeUsed: Long): String {
             val date: Date = Date(lastTimeUsed)

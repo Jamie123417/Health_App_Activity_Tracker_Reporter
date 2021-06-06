@@ -1,7 +1,5 @@
 package com.example.health_app_activity_tracker_reporter
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.app.AppOpsManager
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
@@ -9,15 +7,20 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
-import android.os.Process
+import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class AppsActivity : AppCompatActivity() {
 
@@ -32,7 +35,6 @@ class AppsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         if(checkUsageStatsPermission()) {
-            title = "Installed Apps"
             textViewAppsNo = findViewById(R.id.appsCounter)
             listViewUserApps = findViewById(R.id.installed_app_list)
 
@@ -52,8 +54,16 @@ class AppsActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         } else {
-                startActivity(Intent(Settings.ACTION_APP_USAGE_SETTINGS))
+            val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+            intent.data = Uri.fromParts("package", packageName, null)
+            Toast.makeText(this, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()
+            startActivity(intent)
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
     }
 
     fun getInstalledApps(): MutableList<AppList> {
@@ -93,12 +103,17 @@ class AppsActivity : AppCompatActivity() {
         return 0
     }
 
-    @Suppress("DEPRECATION")
-    private fun checkUsageStatsPermission(): Boolean{
-        var appOpsManager: AppOpsManager?
-        appOpsManager = getSystemService(Context.APP_OPS_SERVICE)!! as AppOpsManager
-        var mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), packageName)
-        return  mode == AppOpsManager.MODE_ALLOWED
+    fun checkUsageStatsPermission(): Boolean {
+        return try {
+            val packageManager = packageManager
+            val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+            val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+            var mode = 0
+            mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
+            mode == AppOpsManager.MODE_ALLOWED
+        } catch (e: NameNotFoundException) {
+            false
+        }
     }
 
     class AppListAdapter(private val appCtx: Context, private val customizedList: MutableList<AppList>) : BaseAdapter() {

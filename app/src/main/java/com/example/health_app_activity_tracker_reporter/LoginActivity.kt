@@ -52,12 +52,12 @@ class LoginActivity : AppCompatActivity() {
     private fun verifySQ(emailUserName: String, password: String) {
         if (databaseResources.loginCheckUserName(emailUserName, password)) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
-            intentLogin.putExtra("Username", entEmailUserName.text.toString().trim { it <= ' ' })
+            intentLogin.putExtra("USERNAME", emailUserName)
             Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show()
             startActivity(intentLogin)
         } else if (databaseResources.loginCheckUserEmail(emailUserName, password)) {
             val intentLogin = Intent(applicationContext, Homepage::class.java)
-            intentLogin.putExtra("EMAIL", entEmailUserName.text.toString())
+            intentLogin.putExtra("EMAIL", emailUserName)
             Snackbar.make(scrollLogin, getString(R.string.login_message), Snackbar.LENGTH_LONG).show()
             startActivity(intentLogin)
         } else {

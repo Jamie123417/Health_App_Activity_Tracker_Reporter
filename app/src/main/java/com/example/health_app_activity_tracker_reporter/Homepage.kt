@@ -2,6 +2,7 @@ package com.example.health_app_activity_tracker_reporter
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -17,9 +18,9 @@ class Homepage : AppCompatActivity() {
         setContentView(R.layout.activity_homepage)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        title = "Homepage"
 
-//        val userEmail = intent.getStringExtra("email").toString()
+        val userEmail = intent.getStringExtra("EMAIL").toString()
+        val userName = intent.getStringExtra("USERNAME").toString()
 
         btnLogOut = findViewById(R.id.btnLogOut)
 
@@ -30,7 +31,8 @@ class Homepage : AppCompatActivity() {
 
         btnActivitySettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
-//            intent.putExtra("EMAIL", userEmail)
+            intent.putExtra("EMAIL", userEmail)
+            intent.putExtra("USERNAME", userName)
             startActivity(intent)
         }
         btnActivityApps.setOnClickListener {
@@ -50,12 +52,10 @@ class Homepage : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
-
-//        if(intent.getStringExtra("ID_EXTRA") != null){
-//            textName = findViewById(R.id.regFirstName)
-//            textName.text = intent.getStringExtra("ID_EXTRA")
-//        }
     }
-
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
 }

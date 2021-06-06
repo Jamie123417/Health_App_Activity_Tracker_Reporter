@@ -2,6 +2,7 @@ package com.example.health_app_activity_tracker_reporter
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
@@ -20,7 +21,6 @@ class AddAppToTrackerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_app_to_tracker)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Add App to Monitor"
         databaseResources = DatabaseResources(applicationContext)
 
         val appListInstance = AppsActivity()
@@ -61,6 +61,11 @@ class AddAppToTrackerActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
     }
 
     private fun validInput(): Boolean {

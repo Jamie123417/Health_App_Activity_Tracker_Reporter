@@ -1,15 +1,17 @@
 package com.example.health_app_activity_tracker_reporter
 
-import androidx.appcompat.app.AppCompatActivity
+import android.R.menu
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
+import android.view.Menu
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -30,7 +32,6 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Create an Account"
 
         btnRegister = findViewById(R.id.reg_btn_add_app)
         regUserName = findViewById(R.id.regUserName)
@@ -49,7 +50,11 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
     }
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
     private fun postDataToSQLite() {
         if (!databaseResources.registerCheckUser(regEmailAddress.text.toString())) {
             val user = User(1, "temp", "temp", "temp", "temp", "temp")

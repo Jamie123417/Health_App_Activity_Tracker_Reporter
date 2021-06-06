@@ -169,11 +169,11 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return user
     }
 
-    fun findUserDetailsEmail(email: String): User {
+    fun findUserDetailsEmail(email: String): User? {
         val query = ("SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = '" + email + "'")
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
-        var user: User = User(1, "", "", "", "", "")
+        var user: User? = null
         if (cursor.moveToFirst()) {
             cursor.moveToFirst()
             val id = Integer.parseInt(cursor.getString(0))
@@ -192,17 +192,17 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     fun addTracker(tracker: Tracker) {
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(COLUMN_APP_NAME, tracker.appName)
-        values.put(COLUMN_APP_PACKAGES, tracker.appPackages)
-        values.put(COLUMN_APP_DLU, tracker.dateLastUsed)
-        values.put(COLUMN_APP_INTERVAL, tracker.trackingInterval)
+        values.put(COLUMN_APP_NAME, tracker.appTName)
+        values.put(COLUMN_APP_PACKAGES, tracker.appTPackages)
+        values.put(COLUMN_APP_DLU, tracker.appTdateLastUsed)
+        values.put(COLUMN_APP_INTERVAL, tracker.appTrackingInterval)
         db.insert(TABLE_TRACKERS, null, values)
         db.close()
     }
 
     fun deleteTracker(tracker: Tracker) {
         val db = this.writableDatabase
-        db.delete(TABLE_TRACKERS, COLUMN_APP_NAME + " = ?", arrayOf(tracker.appName))
+        db.delete(TABLE_TRACKERS, COLUMN_APP_NAME + " = ?", arrayOf(tracker.appTName))
         db.close()
     }
 
@@ -216,6 +216,31 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         cursor.close()
         db.close()
         return cursorCount > 0
+    }
+
+    fun getAllTrackers(): MutableList<Tracker> {
+        val trackerList: MutableList<Tracker> = ArrayList()
+        // array of columns to fetch
+        val columns = arrayOf(COLUMN_APP_ID, COLUMN_APP_NAME, COLUMN_APP_PACKAGES, COLUMN_APP_DLU, COLUMN_APP_INTERVAL)
+        // sorting orders
+        val sortOrder = "$COLUMN_APP_NAME ASC"
+        val db = this.readableDatabase
+        // query the table
+        val cursor = db.query(TABLE_TRACKERS, columns, null, null, null, null, sortOrder)
+        if (cursor.moveToFirst()) {
+            do {
+                val tracker = Tracker(
+                    trackID = cursor.getString(cursor.getColumnIndex(COLUMN_APP_ID)).toInt(),
+                    appTName = cursor.getString(cursor.getColumnIndex(COLUMN_APP_NAME)),
+                    appTPackages = cursor.getString(cursor.getColumnIndex(COLUMN_APP_PACKAGES)),
+                    appTdateLastUsed = cursor.getString(cursor.getColumnIndex(COLUMN_APP_DLU)).toLong(),
+                    appTrackingInterval = cursor.getString(cursor.getColumnIndex(COLUMN_APP_INTERVAL)).toInt())
+                trackerList.add(tracker)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return trackerList
     }
 
     companion object {
