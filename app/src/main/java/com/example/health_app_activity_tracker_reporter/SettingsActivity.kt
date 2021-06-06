@@ -31,7 +31,7 @@ class SettingsActivity : AppCompatActivity() {
         val userEmail = intent.getStringExtra("EMAIL").toString()
         val userName = intent.getStringExtra("PASSWORD").toString()
 
-        if (userEmail != "") {
+        if (userEmail != "null") {
             databaseResources = DatabaseResources(this)
             userDetails = databaseResources.findUserDetailsEmail(userEmail)!!
             textViewAccUName.text = userDetails.userName
@@ -40,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
             textViewAccLName.text = userDetails.lastName
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
             startActivity(intent)
-        } else if (userName != "") {
+        } else if (userName != "null") {
             databaseResources = DatabaseResources(this)
             userDetails = databaseResources.findUserDetailsUserName(userName)!!
             textViewAccUName.text = userDetails.userName

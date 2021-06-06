@@ -65,8 +65,8 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         val db = this.writableDatabase
         val cv = ContentValues()
         cv.put(COLUMN_USERNAME, "admin")
-        cv.put(COLUMN_USER_FIRST_NAME, "john")
-        cv.put(COLUMN_USER_LAST_NAME, "smith")
+        cv.put(COLUMN_USER_FIRST_NAME, "John")
+        cv.put(COLUMN_USER_LAST_NAME, "Smith")
         cv.put(COLUMN_USER_EMAIL, "admin@email.com")
         cv.put(COLUMN_USER_PASSWORD, "password")
         db.insert(TABLE_USERS, null, cv)
@@ -103,7 +103,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
-    fun registerCheckUser(email: String): Boolean {
+    fun registerCheckUserEmail(email: String): Boolean {
         val columns = arrayOf(COLUMN_USER_ID)
         val db = this.readableDatabase
         val selection = "$COLUMN_USER_EMAIL = ?"

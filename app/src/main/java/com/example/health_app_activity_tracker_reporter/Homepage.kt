@@ -7,11 +7,13 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.util.*
 
 class Homepage : AppCompatActivity() {
 
     private lateinit var btnLogOut : Button
-    private lateinit var textName: TextView
+    private lateinit var textHomepageName: TextView
+    private lateinit var databaseResources: DatabaseResources
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +30,30 @@ class Homepage : AppCompatActivity() {
         val btnActivityApps = findViewById<LinearLayout>(R.id.activityApps)
         val btnActivityTracker = findViewById<LinearLayout>(R.id.activityTracker)
         val btnAddAppToTracker = findViewById<LinearLayout>(R.id.activityAddAppsToTracker)
+        textHomepageName = findViewById(R.id.textName)
+        var userFirstName : String = ""
+        if (userEmail != "null") {
+            databaseResources = DatabaseResources(this)
+            val userDetails = databaseResources.findUserDetailsEmail(userEmail)!!
+            userFirstName = userDetails.firstName.toString()
+        } else if (userName != "null") {
+            databaseResources = DatabaseResources(this)
+            val userDetails = databaseResources.findUserDetailsUserName(userName)!!
+            userFirstName = userDetails.firstName.toString()
+        }
+        val dt = Date()
+        val c: Calendar = Calendar.getInstance()
+        c.time = dt
+        val hours: Int = c.get(Calendar.HOUR_OF_DAY)
+        if (hours >= 1 && hours <= 12) {
+            textHomepageName.text = ("Good Morning " + userFirstName)
+        } else if (hours >= 12 && hours <= 16) {
+            textHomepageName.text = ("Good Afternoon " + userFirstName)
+        } else if (hours >= 16 && hours <= 21) {
+            textHomepageName.text = ("Good Evening " + userFirstName)
+        } else if (hours >= 21 && hours <= 24) {
+            textHomepageName.text = ("Good Night " + userFirstName)
+        }
 
         btnActivitySettings.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
@@ -47,15 +73,16 @@ class Homepage : AppCompatActivity() {
             val intent = Intent(this, AddAppToTrackerActivity::class.java)
             startActivity(intent)
         }
-
-        btnLogOut.setOnClickListener() {
+        btnLogOut.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
         return true
     }
 }
+

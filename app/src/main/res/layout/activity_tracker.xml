@@ -8,6 +8,14 @@
     tools:context=".TrackerActivity">
 
     <TextView
+        android:id="@+id/trackerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="Currently Tracked Apps"
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/appsTCounter"
         android:text="Count: "
         android:padding="5dp"

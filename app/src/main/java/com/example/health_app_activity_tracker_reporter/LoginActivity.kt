@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener  {
             if (validInput() ) {
-                if(!databaseResources.registerCheckUser("admin")){
+                if(!databaseResources.registerCheckUserEmail("admin@email.com")){
                     databaseResources.addAdmin()
                 }
                 val emailUserName = entEmailUserName.text.toString()

@@ -1,6 +1,5 @@
 package com.example.health_app_activity_tracker_reporter
 
-import android.R.menu
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -56,7 +55,7 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
     private fun postDataToSQLite() {
-        if (!databaseResources.registerCheckUser(regEmailAddress.text.toString())) {
+        if (!databaseResources.registerCheckUserEmail(regEmailAddress.text.toString())) {
             val user = User(1, "temp", "temp", "temp", "temp", "temp")
             user.id = (databaseResources.getUsersdbSize() + 1)
             user.userName = regUserName.text.toString().trim()
