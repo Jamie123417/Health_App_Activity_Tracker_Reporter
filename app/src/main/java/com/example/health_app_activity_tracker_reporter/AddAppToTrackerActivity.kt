@@ -2,11 +2,11 @@ package com.example.health_app_activity_tracker_reporter
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
-
+import android.R.menu
+import android.view.Menu
 
 class AddAppToTrackerActivity : AppCompatActivity() {
     private lateinit var appNameSpinner: Spinner

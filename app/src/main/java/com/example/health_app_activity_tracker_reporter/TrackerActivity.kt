@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -16,7 +15,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale
 import kotlin.collections.ArrayList
-
+import android.R.menu
+import android.view.Menu
 
 class TrackerActivity : AppCompatActivity() {
 

@@ -3,9 +3,10 @@ package com.example.health_app_activity_tracker_reporter
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.R.menu
+import android.view.Menu
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var textViewAccUName: TextView
