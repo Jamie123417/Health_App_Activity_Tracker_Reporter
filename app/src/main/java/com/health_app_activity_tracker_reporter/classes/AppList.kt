@@ -1,4 +1,4 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter.classes
 
 import android.graphics.drawable.Drawable
 

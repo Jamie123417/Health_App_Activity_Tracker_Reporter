@@ -1,4 +1,4 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter
 
 import android.content.Context
 import android.content.Intent
@@ -11,6 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.health_app_activity_tracker_reporter.R
+import com.health_app_activity_tracker_reporter.classes.User
+import com.health_app_activity_tracker_reporter.resources.DatabaseResources
 import com.google.android.material.snackbar.Snackbar
 
 

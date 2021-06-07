@@ -1,13 +1,14 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import android.R.menu
 import android.view.Menu
 import android.widget.Button
+import com.example.health_app_activity_tracker_reporter.R
+import com.health_app_activity_tracker_reporter.classes.User
+import com.health_app_activity_tracker_reporter.resources.DatabaseResources
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var textViewAccUName: TextView

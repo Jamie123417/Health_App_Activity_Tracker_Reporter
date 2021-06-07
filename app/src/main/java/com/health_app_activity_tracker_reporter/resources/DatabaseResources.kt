@@ -1,9 +1,11 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter.resources
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.health_app_activity_tracker_reporter.classes.Tracker
+import com.health_app_activity_tracker_reporter.classes.User
 
 class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -94,7 +96,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         values.put(COLUMN_USER_EMAIL, user.email)
         values.put(COLUMN_USER_PASSWORD, user.password)
         val db = this.writableDatabase
-        db.update(TABLE_USERS,values,COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
+        db.update(TABLE_USERS,values, COLUMN_USER_ID + " = ?",arrayOf(java.lang.String.valueOf(user.id)))
         db.close()
     }
     fun deleteUser(user: User) {

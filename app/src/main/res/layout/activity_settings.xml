@@ -5,7 +5,7 @@
     android:id="@+id/set_scroll_vire"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".SettingsActivity">
+    tools:context="com.health_app_activity_tracker_reporter.SettingsActivity">
 
     <LinearLayout
         android:id="@+id/settings_linear_view"

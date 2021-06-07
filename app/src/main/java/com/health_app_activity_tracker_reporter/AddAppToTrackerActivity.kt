@@ -1,10 +1,14 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
+import com.example.health_app_activity_tracker_reporter.R
+import com.health_app_activity_tracker_reporter.classes.AppList
+import com.health_app_activity_tracker_reporter.classes.Tracker
+import com.health_app_activity_tracker_reporter.resources.DatabaseResources
 import java.util.ArrayList
 
 class AddAppToTrackerActivity : AppCompatActivity() {
@@ -27,7 +31,7 @@ class AddAppToTrackerActivity : AppCompatActivity() {
         if(appListInstance.checkUsageStatsPermission()) {
             installedAppsList = appListInstance.getInstalledApps()
         }
-        
+
         appNameSpinner = findViewById(R.id.selectAppName)
         weeks = findViewById(R.id.regWeeks)
         days = findViewById(R.id.regDays)

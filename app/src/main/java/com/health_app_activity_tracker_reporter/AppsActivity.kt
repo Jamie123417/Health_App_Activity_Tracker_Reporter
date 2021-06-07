@@ -1,4 +1,4 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter
 
 import android.app.AppOpsManager
 import android.app.usage.UsageStats
@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import android.view.Menu
+import com.example.health_app_activity_tracker_reporter.R
+import com.health_app_activity_tracker_reporter.classes.AppList
 
 class AppsActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.example.health_app_activity_tracker_reporter
+package com.health_app_activity_tracker_reporter
 
 import android.content.Context
 import android.content.Intent
@@ -15,8 +15,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale
 import kotlin.collections.ArrayList
-import android.R.menu
 import android.view.Menu
+import com.example.health_app_activity_tracker_reporter.R
+import com.health_app_activity_tracker_reporter.classes.AppList
+import com.health_app_activity_tracker_reporter.classes.Tracker
+import com.health_app_activity_tracker_reporter.resources.DatabaseResources
 
 class TrackerActivity : AppCompatActivity() {
 
