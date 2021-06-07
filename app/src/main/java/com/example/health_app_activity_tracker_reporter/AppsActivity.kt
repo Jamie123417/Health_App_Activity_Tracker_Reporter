@@ -143,7 +143,7 @@ class AppsActivity : AppCompatActivity() {
 
         private fun convertTime(lastTimeUsed: Long): String {
             val date: Date = Date(lastTimeUsed)
-            val format = SimpleDateFormat("dd/mm/yyyy HH:mm", Locale.ENGLISH)
+            val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
             return format.format(date)
         }
     }
