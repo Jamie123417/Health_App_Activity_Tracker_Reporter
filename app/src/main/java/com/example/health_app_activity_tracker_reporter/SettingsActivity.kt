@@ -7,12 +7,14 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.R.menu
 import android.view.Menu
+import android.widget.Button
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var textViewAccUName: TextView
     private lateinit var textViewAccEmail: TextView
     private lateinit var textViewAccFName: TextView
     private lateinit var textViewAccLName: TextView
+    private lateinit var buttonDelAccount: Button
 
     private lateinit var databaseResources: DatabaseResources
     private lateinit var userDetails: User
@@ -27,27 +29,29 @@ class SettingsActivity : AppCompatActivity() {
         textViewAccEmail = findViewById(R.id.settings_email)
         textViewAccFName = findViewById(R.id.settings_first_name)
         textViewAccLName = findViewById(R.id.settings_last_name)
+        buttonDelAccount = findViewById(R.id.btn_del_account)
 
         val userEmail = intent.getStringExtra("EMAIL").toString()
-        val userName = intent.getStringExtra("PASSWORD").toString()
+        val userName = intent.getStringExtra("USERNAME").toString()
+        databaseResources = DatabaseResources(this)
 
         if (userEmail != "null") {
-            databaseResources = DatabaseResources(this)
             userDetails = databaseResources.findUserDetailsEmail(userEmail)!!
-            textViewAccUName.text = userDetails.userName
-            textViewAccEmail.text = userDetails.email
-            textViewAccFName.text = userDetails.firstName
-            textViewAccLName.text = userDetails.lastName
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-            startActivity(intent)
+            textViewAccUName.text = ("Username: " + userDetails.userName)
+            textViewAccEmail.text = ("User Email: " + userDetails.email)
+            textViewAccFName.text = ("User First Name: " + userDetails.firstName)
+            textViewAccLName.text = ("User Last Name: " + userDetails.lastName)
         } else if (userName != "null") {
-            databaseResources = DatabaseResources(this)
             userDetails = databaseResources.findUserDetailsUserName(userName)!!
-            textViewAccUName.text = userDetails.userName
-            textViewAccEmail.text = userDetails.email
-            textViewAccFName.text = userDetails.firstName
-            textViewAccLName.text = userDetails.lastName
-            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            textViewAccUName.text = ("Username: " + userDetails.userName)
+            textViewAccEmail.text = ("User Email: " + userDetails.email)
+            textViewAccFName.text = ("User First Name: " + userDetails.firstName)
+            textViewAccLName.text = ("User Last Name: " + userDetails.lastName)
+        }
+
+        buttonDelAccount.setOnClickListener {
+            databaseResources.deleteUser(userDetails)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
     }

@@ -19,7 +19,7 @@
             android:gravity="center"
             android:padding="10sp"
             android:text="Homepage"
-            android:textSize="30sp" />
+            android:textSize="34sp" />
 
         <TextView
             android:id="@+id/textName"
@@ -212,8 +212,10 @@
             <Button
                 android:id="@+id/btnLogOut"
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
-                android:text="Log Out" />
+                android:layout_height="match_parent"
+                android:layout_margin="40dp"
+                android:text="Log Out"
+                android:textSize="30dp" />
         </LinearLayout>
         
     </LinearLayout>

@@ -9,7 +9,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -19,15 +18,14 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
-import android.R.menu
 import android.view.Menu
 
 class AppsActivity : AppCompatActivity() {
 
     private lateinit var listViewUserApps: ListView
     private lateinit var textViewAppsNo: TextView
-    private var installedApps: MutableList<AppList> = ArrayList()
     private var appAdapter: AppListAdapter? = null
+    private var installedAppsList: MutableList<AppList> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +37,18 @@ class AppsActivity : AppCompatActivity() {
             listViewUserApps = findViewById(R.id.installed_app_list)
 
             // get the list of installed apps
-            installedApps = getInstalledApps()
+            installedAppsList = getInstalledApps()
             //Total Number of Installed-Apps(i.e. List Size)
-            val userAppsNo = installedApps.count().toString() + ""
+            val userAppsNo = installedAppsList.count().toString() + ""
             textViewAppsNo.text = "Total User Installed Apps: $userAppsNo"
 
             //custom View for apps layout
-            appAdapter = AppListAdapter(this, installedApps)
-            listViewUserApps.adapter = AppListAdapter(this, installedApps)
+            appAdapter = AppListAdapter(this, installedAppsList)
+            listViewUserApps.adapter = AppListAdapter(this, installedAppsList)
             listViewUserApps.setOnItemClickListener { parent, view, position, id ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:" + installedApps[position].appPackages)
-                Toast.makeText(this, installedApps[position].appPackages, Toast.LENGTH_SHORT).show()
+                intent.data = Uri.parse("package:" + installedAppsList[position].appPackages)
+                Toast.makeText(this, installedAppsList[position].appPackages, Toast.LENGTH_SHORT).show()
                 startActivity(intent)
             }
         } else {

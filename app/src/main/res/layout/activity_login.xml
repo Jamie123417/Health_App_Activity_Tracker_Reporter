@@ -26,6 +26,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
+        android:background="#0084FFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/heading">
@@ -39,8 +40,9 @@
             <EditText
                 android:id="@+id/entEmailName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginTop="8dp"
+                android:background="#84FFFF"
                 android:hint="@string/enter_your_email"
                 android:inputType="text"
                 android:padding="5dp"
@@ -51,8 +53,9 @@
             <EditText
                 android:id="@+id/entPassword"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginTop="32dp"
+                android:background="#84FFFF"
                 android:hint="@string/enter_your_password"
                 android:inputType="textPassword"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -66,19 +69,19 @@
                 android:layout_marginTop="32dp"
                 android:text="@string/text_login"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
+                android:textSize="34sp"
                 app:layout_constraintTop_toBottomOf="@+id/entPassword" />
 
             <Button
                 android:id="@+id/btn_Register"
                 android:layout_width="match_parent"
-                android:layout_height="90dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:text="@string/text_not_member"
+                android:textSize="34sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_LogIn" />
 
@@ -95,6 +98,6 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollViewLogin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_activity_tracker" />
+        app:srcCompat="@drawable/ic_activity_tracker_round" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

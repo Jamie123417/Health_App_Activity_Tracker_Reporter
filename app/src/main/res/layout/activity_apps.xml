@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:text="List of all User Installed Apps"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
     <TextView
         android:id="@+id/appsCounter"
         android:text="Count: "

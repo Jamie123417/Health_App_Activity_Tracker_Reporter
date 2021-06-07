@@ -68,7 +68,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         cv.put(COLUMN_USER_FIRST_NAME, "John")
         cv.put(COLUMN_USER_LAST_NAME, "Smith")
         cv.put(COLUMN_USER_EMAIL, "admin@email.com")
-        cv.put(COLUMN_USER_PASSWORD, "password")
+        cv.put(COLUMN_USER_PASSWORD, "password1")
         db.insert(TABLE_USERS, null, cv)
         db.close()
     }
@@ -202,7 +202,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
 
     fun deleteTracker(tracker: Tracker) {
         val db = this.writableDatabase
-        db.delete(TABLE_TRACKERS, COLUMN_APP_NAME + " = ?", arrayOf(tracker.appTName))
+        db.delete(TABLE_TRACKERS, COLUMN_USER_ID + " = ?", arrayOf(java.lang.String.valueOf(tracker.trackID)))
         db.close()
     }
 

@@ -49,7 +49,6 @@
                 android:elevation="2dp"
                 android:text="Sign Up"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
                 android:textSize="34sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
