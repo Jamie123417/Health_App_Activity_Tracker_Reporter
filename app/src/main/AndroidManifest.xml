@@ -63,6 +63,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.health_app_activity_tracker_reporter.LoginActivity" />
         </activity>
+        <receiver
+            android:name="com.health_app_activity_tracker_reporter.resources.NotificationPublisher"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
     </application>
 
 </manifest>

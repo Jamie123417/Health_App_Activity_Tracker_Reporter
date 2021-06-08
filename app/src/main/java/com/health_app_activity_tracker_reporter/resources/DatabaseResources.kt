@@ -31,7 +31,9 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         COLUMN_APP_NAME + " TEXT, " +
                         COLUMN_APP_PACKAGES + " TEXT, " +
                         COLUMN_APP_DLU + " INTEGER, " +
-                        COLUMN_APP_INTERVAL + " INTEGER " + ")")
+                        COLUMN_APP_WEEKS + " INTEGER, " +
+                        COLUMN_APP_DAYS + " INTEGER, " +
+                        COLUMN_APP_HOURS + " INTEGER " + ")")
             } catch (e: Exception){
                 return
             }
@@ -63,6 +65,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
+// Users Table Functions
     fun addAdmin() {
         val db = this.writableDatabase
         val cv = ContentValues()
@@ -191,13 +194,16 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return user
     }
 
+// Trackers Table Functions
     fun addTracker(tracker: Tracker) {
         val db = this.writableDatabase
         val values = ContentValues()
         values.put(COLUMN_APP_NAME, tracker.appTName)
         values.put(COLUMN_APP_PACKAGES, tracker.appTPackages)
-        values.put(COLUMN_APP_DLU, tracker.appTdateLastUsed)
-        values.put(COLUMN_APP_INTERVAL, tracker.appTrackingInterval)
+        values.put(COLUMN_APP_DLU, tracker.appTDateLastUsed)
+        values.put(COLUMN_APP_DAYS, tracker.appWeeks)
+        values.put(COLUMN_APP_DAYS, tracker.appDays)
+        values.put(COLUMN_APP_HOURS, tracker.appHours)
         db.insert(TABLE_TRACKERS, null, values)
         db.close()
     }
@@ -223,7 +229,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     fun getAllTrackers(): MutableList<Tracker> {
         val trackerList: MutableList<Tracker> = ArrayList()
         // array of columns to fetch
-        val columns = arrayOf(COLUMN_APP_ID, COLUMN_APP_NAME, COLUMN_APP_PACKAGES, COLUMN_APP_DLU, COLUMN_APP_INTERVAL)
+        val columns = arrayOf(COLUMN_APP_ID, COLUMN_APP_NAME, COLUMN_APP_PACKAGES, COLUMN_APP_DLU, COLUMN_APP_WEEKS, COLUMN_APP_DAYS, COLUMN_APP_HOURS)
         // sorting orders
         val sortOrder = "$COLUMN_APP_NAME ASC"
         val db = this.readableDatabase
@@ -235,8 +241,10 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                     trackID = cursor.getString(cursor.getColumnIndex(COLUMN_APP_ID)).toInt(),
                     appTName = cursor.getString(cursor.getColumnIndex(COLUMN_APP_NAME)),
                     appTPackages = cursor.getString(cursor.getColumnIndex(COLUMN_APP_PACKAGES)),
-                    appTdateLastUsed = cursor.getString(cursor.getColumnIndex(COLUMN_APP_DLU)).toLong(),
-                    appTrackingInterval = cursor.getString(cursor.getColumnIndex(COLUMN_APP_INTERVAL)).toInt())
+                    appTDateLastUsed = cursor.getString(cursor.getColumnIndex(COLUMN_APP_DLU)).toLong(),
+                    appWeeks = cursor.getString(cursor.getColumnIndex(COLUMN_APP_WEEKS)).toInt(),
+                    appDays = cursor.getString(cursor.getColumnIndex(COLUMN_APP_DAYS)).toInt(),
+                    appHours = cursor.getString(cursor.getColumnIndex(COLUMN_APP_HOURS)).toInt())
                 trackerList.add(tracker)
             } while (cursor.moveToNext())
         }
@@ -260,6 +268,8 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         private const val COLUMN_APP_NAME = "app_name"
         private const val COLUMN_APP_PACKAGES = "app_packages"
         private const val COLUMN_APP_DLU = "app_date_last_used"
-        private const val COLUMN_APP_INTERVAL = "app_tracking_interval"
+        private const val COLUMN_APP_WEEKS = "app_tracking_weeks"
+        private const val COLUMN_APP_DAYS = "app_tracking_days"
+        private const val COLUMN_APP_HOURS = "app_tracking_hours"
     }
 }

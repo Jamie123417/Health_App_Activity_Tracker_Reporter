@@ -7,26 +7,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
-import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import java.text.SimpleDateFormat
-import java.util.*
-import android.view.Menu
 import com.example.health_app_activity_tracker_reporter.R
 import com.health_app_activity_tracker_reporter.classes.AppList
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AppsActivity : AppCompatActivity() {
 
     private lateinit var listViewUserApps: ListView
     private lateinit var textViewAppsNo: TextView
-    private var appAdapter: AppListAdapter? = null
+//    private lateinit var appAdapter: AppListAdapter
     private var installedAppsList: MutableList<AppList> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,17 +44,15 @@ class AppsActivity : AppCompatActivity() {
             textViewAppsNo.text = "Total User Installed Apps: $userAppsNo"
 
             //custom View for apps layout
-            appAdapter = AppListAdapter(this, installedAppsList)
+//            appAdapter = AppListAdapter(this, installedAppsList)
             listViewUserApps.adapter = AppListAdapter(this, installedAppsList)
             listViewUserApps.setOnItemClickListener { parent, view, position, id ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:" + installedAppsList[position].appPackages)
                 Toast.makeText(this, installedAppsList[position].appPackages, Toast.LENGTH_SHORT).show()
                 startActivity(intent)
             }
         } else {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-            intent.data = Uri.fromParts("package", packageName, null)
             Toast.makeText(this, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()
             startActivity(intent)
         }
@@ -66,8 +63,8 @@ class AppsActivity : AppCompatActivity() {
         return true
     }
 
-    fun getInstalledApps(): MutableList<AppList> {
-        //fills array on installed apps
+    //fills array on installed apps
+    private fun getInstalledApps(): MutableList<AppList> {
         var appsList: MutableList<AppList> = ArrayList()
         val appListPacks: List<PackageInfo> = packageManager.getInstalledPackages(0)
         for (i in appListPacks.indices) {
@@ -96,27 +93,25 @@ class AppsActivity : AppCompatActivity() {
             val pacName = customUsageStats[i].packageName.toString()
             if (packageName == pacName) {
                 val dateLastUsed = customUsageStats[i].lastTimeUsed
-//                return ("Last Time Used " + convertTime(dateLastUsed))
                 return (dateLastUsed)
             }
         }
         return 0
     }
 
-    fun checkUsageStatsPermission(): Boolean {
+    private fun checkUsageStatsPermission(): Boolean {
         return try {
-            val packageManager = packageManager
             val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
             val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
             var mode = 0
             mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
             mode == AppOpsManager.MODE_ALLOWED
-        } catch (e: NameNotFoundException) {
+        } catch (e: Exception) {
             false
         }
     }
 
-    class AppListAdapter(private val appCtx: Context, private val customizedList: MutableList<AppList>) : BaseAdapter() {
+    private class AppListAdapter(private val appCtx: Context, private val customizedList: MutableList<AppList>) : BaseAdapter() {
         private lateinit var icon: ImageView
         private lateinit var appName: TextView
         private lateinit var packageName: TextView
@@ -139,15 +134,22 @@ class AppsActivity : AppCompatActivity() {
             icon.setImageDrawable(customizedList[position].appIcon)
             appName.text = customizedList[position].appName
             packageName.text = customizedList[position].appPackages
-            appDateLastUsed.text = ("Last Time Used: " + convertTime(customizedList[position].dateLastUsed))
+            appDateLastUsed.text = ("Time Last Used: " + convertTime(customizedList[position].dateLastUsed))
             return view
         }
 
         private fun convertTime(lastTimeUsed: Long): String {
             val date: Date = Date(lastTimeUsed)
-            val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
-            return format.format(date)
+            val formater = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
+            return formater.format(date)
         }
+    }
+
+    fun getInstalledAppsList(): MutableList<AppList> {
+        if (checkUsageStatsPermission()) {
+            return getInstalledApps()
+        }
+        return ArrayList()
     }
 }
 

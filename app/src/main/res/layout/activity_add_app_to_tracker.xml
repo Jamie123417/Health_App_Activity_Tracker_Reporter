@@ -37,7 +37,7 @@
             android:focusableInTouchMode="true">
 
             <Spinner
-                android:id="@+id/selectAppName"
+                android:id="@+id/select_app_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:drawable/btn_dropdown"
@@ -46,7 +46,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
-                android:id="@+id/regWeeks"
+                android:id="@+id/reg_weeks"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
@@ -54,10 +54,10 @@
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectAppName" />
+                app:layout_constraintTop_toBottomOf="@+id/select_app_name" />
 
             <EditText
-                android:id="@+id/regDays"
+                android:id="@+id/reg_days"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
@@ -65,10 +65,10 @@
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/regWeeks" />
+                app:layout_constraintTop_toBottomOf="@+id/reg_weeks" />
 
             <EditText
-                android:id="@+id/regHours"
+                android:id="@+id/reg_hours"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
@@ -76,10 +76,10 @@
                 android:inputType="number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/regDays" />
+                app:layout_constraintTop_toBottomOf="@+id/reg_days" />
 
             <Button
-                android:id="@+id/reg_btn_Track_app"
+                android:id="@+id/reg_btn_track_app"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_margin="40dp"
@@ -90,7 +90,7 @@
                 android:textSize="34sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/regHours" />
+                app:layout_constraintTop_toBottomOf="@+id/reg_hours" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
