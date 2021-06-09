@@ -56,25 +56,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
-                android:text="Maximim Time Until Notification"
+                android:text="Notification Intervals"
                 app:layout_constraintTop_toBottomOf="@+id/app_t_time_notification" />
 
             <Button
-                android:id="@+id/btn_T_Edit"
+                android:id="@+id/btn_t_Edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="64dp"
                 android:text="Edit"
-                app:layout_constraintEnd_toStartOf="@+id/btn_T_Delete"
+                app:layout_constraintEnd_toStartOf="@+id/btn_t_Delete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/app_t_notification_limit" />
 
             <Button
-                android:id="@+id/btn_T_Delete"
+                android:id="@+id/btn_t_Delete"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
                 android:text="Delete"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btn_T_Edit"
+                app:layout_constraintStart_toEndOf="@+id/btn_t_Edit"
                 app:layout_constraintTop_toBottomOf="@+id/app_t_notification_limit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

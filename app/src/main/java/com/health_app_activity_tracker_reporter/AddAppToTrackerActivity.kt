@@ -19,6 +19,7 @@ import android.content.Context
 import android.provider.Settings
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
+import com.google.android.material.snackbar.Snackbar
 import java.lang.Exception
 import java.util.*
 
@@ -45,7 +46,6 @@ class AddAppToTrackerActivity : AppCompatActivity() {
         weeks = findViewById(R.id.reg_weeks)
         days = findViewById(R.id.reg_days)
         hours = findViewById(R.id.reg_hours)
-
         userInsAppsList = getInstalledApps()
 
         for (i in userInsAppsList.indices){
@@ -67,7 +67,7 @@ class AddAppToTrackerActivity : AppCompatActivity() {
 
         //button
         btnTrackApp.setOnClickListener  {
-            if (validInput()) {
+            if (validTrackInput()) {
                 postTrackerDataToSQLite()
             }
         }
@@ -75,28 +75,29 @@ class AddAppToTrackerActivity : AppCompatActivity() {
 
     private fun postTrackerDataToSQLite() {
         val appName = appNameSpinner.selectedItem.toString()
-        val weeks = weeks.text.toString().toInt()
-        val days = days.text.toString().toInt()
-        val hours = hours.text.toString().toInt()
-        for (i in userInsAppsList.indices){
-            val insAppName = selectedApp.appName
-            val dateLastUsed = selectedApp.dateLastUsed
-            if (insAppName == appName) {
-                if(databaseResources.checkAppTracking(appName)){
-                    val appPackages = selectedApp.appPackages
-                    databaseResources.addTracker(Tracker(0, appName, appPackages, dateLastUsed, weeks, days, hours))
-                    Toast.makeText(this, "App Successfully Added to Tracked", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, TrackerActivity::class.java)
-                    startActivity(intent)
-                }
+        val weeks = weeks.text.toString().toIntOrNull() ?: 0
+        val days = days.text.toString().toIntOrNull() ?: 0
+        val hours = hours.text.toString().toIntOrNull() ?: 0
+//        for (i in userInsAppsList.indices){
+        val insAppName = selectedApp.appName
+        val dateLastUsed = selectedApp.dateLastUsed
+        if (insAppName == appName) {
+            if(!databaseResources.checkAppTracking(appName)){
+                val appPackages = selectedApp.appPackages
+                databaseResources.addTracker(Tracker(0, appName, appPackages, dateLastUsed, weeks, days, hours))
+                Toast.makeText(this, "App Successfully Added to Tracked", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, TrackerActivity::class.java)
+                startActivity(intent)
             }
+//            }
         }
     }
 
-    private fun validInput(): Boolean {
-        return if ((weeks.text.toString().toInt() + days.text.toString().toInt() + hours.text.toString().toInt()) != 0) {
-            true
-        } else appNameSpinner.selectedItem.toString() != ""
+    private fun validTrackInput(): Boolean {
+        val weeks = weeks.text.toString().toIntOrNull() ?: 0
+        val days = days.text.toString().toIntOrNull() ?: 0
+        val hours = hours.text.toString().toIntOrNull() ?: 0
+        return weeks + days + hours > 0
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -148,4 +149,5 @@ class AddAppToTrackerActivity : AppCompatActivity() {
         }
         return 0
     }
+
 }

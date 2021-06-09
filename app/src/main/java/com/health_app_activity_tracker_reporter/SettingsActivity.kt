@@ -37,13 +37,13 @@ class SettingsActivity : AppCompatActivity() {
         databaseResources = DatabaseResources(this)
 
         if (userEmail != "null") {
-            userDetails = databaseResources.findUserDetailsEmail(userEmail)!!
+            userDetails = databaseResources.getUserDetailsEmail(userEmail)!!
             textViewAccUName.text = ("Username: " + userDetails.userName)
             textViewAccEmail.text = ("User Email: " + userDetails.email)
             textViewAccFName.text = ("User First Name: " + userDetails.firstName)
             textViewAccLName.text = ("User Last Name: " + userDetails.lastName)
         } else if (userName != "null") {
-            userDetails = databaseResources.findUserDetailsUserName(userName)!!
+            userDetails = databaseResources.getUserDetailsUserName(userName)!!
             textViewAccUName.text = ("Username: " + userDetails.userName)
             textViewAccEmail.text = ("User Email: " + userDetails.email)
             textViewAccFName.text = ("User First Name: " + userDetails.firstName)

@@ -20,7 +20,6 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         COLUMN_USER_EMAIL + " TEXT, " +
                         COLUMN_USER_PASSWORD + " TEXT " + ")")
             } catch (e: Exception){
-                return
             }
         }
 
@@ -35,9 +34,10 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         COLUMN_APP_DAYS + " INTEGER, " +
                         COLUMN_APP_HOURS + " INTEGER " + ")")
             } catch (e: Exception){
-                return
+
             }
         }
+        return
     }
 
     private fun ifTableExists(db: SQLiteDatabase, tableName: String): Boolean {
@@ -154,7 +154,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return size
     }
 
-    fun findUserDetailsUserName(userName: String): User? {
+    fun getUserDetailsUserName(userName: String): User? {
         val query = "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + " = '" + userName + "'"
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
@@ -174,7 +174,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return user
     }
 
-    fun findUserDetailsEmail(email: String): User? {
+    fun getUserDetailsEmail(email: String): User? {
         val query = ("SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USER_EMAIL + " = '" + email + "'")
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
@@ -201,7 +201,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         values.put(COLUMN_APP_NAME, tracker.appTName)
         values.put(COLUMN_APP_PACKAGES, tracker.appTPackages)
         values.put(COLUMN_APP_DLU, tracker.appTDateLastUsed)
-        values.put(COLUMN_APP_DAYS, tracker.appWeeks)
+        values.put(COLUMN_APP_WEEKS, tracker.appWeeks)
         values.put(COLUMN_APP_DAYS, tracker.appDays)
         values.put(COLUMN_APP_HOURS, tracker.appHours)
         db.insert(TABLE_TRACKERS, null, values)
@@ -210,7 +210,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
 
     fun deleteTracker(tracker: Tracker) {
         val db = this.writableDatabase
-        db.delete(TABLE_TRACKERS, COLUMN_USER_ID + " = ?", arrayOf(java.lang.String.valueOf(tracker.trackID)))
+        db.delete(TABLE_TRACKERS, COLUMN_APP_ID + " = ?", arrayOf(java.lang.String.valueOf(tracker.trackID)))
         db.close()
     }
 
@@ -223,7 +223,28 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         val cursorCount = cursor.count
         cursor.close()
         db.close()
-        return cursorCount > 0
+        return (cursorCount > 0)
+    }
+
+    fun getAppTracker(appName: String): Tracker {
+        val query = "SELECT * FROM " + TABLE_TRACKERS + " WHERE " + COLUMN_APP_NAME + " = '" + appName + "'"
+        val db = this.writableDatabase
+        val cursor = db.rawQuery(query, null)
+        var tracker: Tracker? = null
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst()
+            val appId = Integer.parseInt(cursor.getString(0))
+            val appTName = cursor.getString(1)
+            val appTPackages = cursor.getString(2)
+            val appTDateLastUsed = cursor.getString(3).toLong()
+            val appWeeks = cursor.getString(4).toInt()
+            val appDays = cursor.getString(5).toInt()
+            val appHours = cursor.getString(6).toInt()
+            tracker = Tracker(appId, appTName, appTPackages, appTDateLastUsed, appWeeks, appDays, appHours)
+            cursor.close()
+        }
+        db.close()
+        return tracker
     }
 
     fun getAllTrackers(): MutableList<Tracker> {

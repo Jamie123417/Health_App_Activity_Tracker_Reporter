@@ -36,11 +36,11 @@ class Homepage : AppCompatActivity() {
         var userFirstName : String = ""
         if (userEmail != "null") {
             databaseResources = DatabaseResources(this)
-            val userDetails = databaseResources.findUserDetailsEmail(userEmail)!!
+            val userDetails = databaseResources.getUserDetailsEmail(userEmail)!!
             userFirstName = userDetails.firstName.toString()
         } else if (userName != "null") {
             databaseResources = DatabaseResources(this)
-            val userDetails = databaseResources.findUserDetailsUserName(userName)!!
+            val userDetails = databaseResources.getUserDetailsUserName(userName)!!
             userFirstName = userDetails.firstName.toString()
         }
         val dt = Date()

@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
@@ -16,7 +19,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.health_app_activity_tracker_reporter.R
+import com.google.android.material.snackbar.Snackbar
 import com.health_app_activity_tracker_reporter.classes.AppList
 import com.health_app_activity_tracker_reporter.classes.Tracker
 import com.health_app_activity_tracker_reporter.classes.Trackers
@@ -30,54 +36,54 @@ class TrackerActivity : AppCompatActivity() {
     private lateinit var listViewTrackedApps: ListView
     private lateinit var textViewTrackedAppsNo: TextView
     private lateinit var databaseResources: DatabaseResources
-    private lateinit var appListInstance: AppsActivity
-    private var trackedAppsData: MutableList<Tracker> = ArrayList()
     private var trackedList: MutableList<Trackers> = ArrayList()
+    private var trackedAppsData: MutableList<Tracker> = ArrayList()
     private var userInsAppsList: MutableList<AppList> = ArrayList()
-    val NOTIFICATION_CHANNEL_ID = "10001"
-    private val notification_channel_id = "activityTrackers"
+//    private val notification_channel_id = "activityTrackers"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracker)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        appListInstance = AppsActivity()
-        userInsAppsList = getInstalledApps()
-
         if(checkUsageStatsPermission()) {
+            userInsAppsList = getInstalledApps()
             databaseResources = DatabaseResources(applicationContext)
             listViewTrackedApps = findViewById(R.id.tracked_app_list)
             textViewTrackedAppsNo = findViewById(R.id.appsTCounter)
 
             trackedAppsData = databaseResources.getAllTrackers()
             for (i in trackedAppsData.indices) {
-                trackedList[i].appTrName = trackedAppsData[i].appTName
-                trackedList[i].appTrPackages = trackedAppsData[i].appTPackages
+                val appTrName = trackedAppsData[i].appTName
+                val appTrPackages = trackedAppsData[i].appTPackages
+                var appTrIcon: Drawable = ColorDrawable(Color.TRANSPARENT)
                 for (j in userInsAppsList.indices) {
-                    if (userInsAppsList[j].appPackages == trackedList[i].appTrPackages ) {
-                        trackedList[i].appTrIcon = userInsAppsList[j].appIcon
+                    val pComp = userInsAppsList[j].appPackages
+                    if (appTrPackages == pComp) {
+                        appTrIcon = userInsAppsList[j].appIcon
+                        break
                     }
                 }
-                trackedList[i].appTrDateLastUsed = getAppDateLastUsed(trackedList[i].appTrPackages)
-                trackedList[i].appTrWeeks = trackedAppsData[i].appWeeks
-                trackedList[i].appTrDays = trackedAppsData[i].appDays
-                trackedList[i].appTrHours = trackedAppsData[i].appHours
+                val appTrDateLastUsed = getAppDateLastUsed(appTrPackages)
+                val appTrWeeks = trackedAppsData[i].appWeeks
+                val appTrDays = trackedAppsData[i].appDays
+                val appTrHours = trackedAppsData[i].appHours
+                trackedList.add(Trackers(appTrName, appTrPackages, appTrIcon, appTrDateLastUsed, appTrWeeks, appTrDays, appTrHours))
             }
             textViewTrackedAppsNo.text = ("Total Number of Tracked Apps: " + trackedList.count().toString() + "")
 
-            for (j in trackedList.indices){
+            for (n in trackedList.indices){
                 try {
-                    cancelNotifications(j, trackedList[j].appTrName)
-                    val dateOfAlert = dateOfNotification(trackedList[j].appTrDateLastUsed, trackedList[j].appTrWeeks, trackedList[j].appTrDays, trackedList[j].appTrHours)
-                    scheduleNotification(getNotification(trackedList[j].appTrName), dateOfAlert, j)
+                    cancelNotifications(n, trackedList[n].appTrName)
+                    val dateOfAlert = dateOfNotification(trackedList[n].appTrDateLastUsed, trackedList[n].appTrWeeks, trackedList[n].appTrDays, trackedList[n].appTrHours)
+                    scheduleNotification(getNotification(trackedList[n].appTrName, n), dateOfAlert, n)
                 } catch (e: Exception){
 
                 }
             }
 
             //custom View for layout
-            listViewTrackedApps.adapter = AppTrackingListAdapter(this, trackedList)
+            listViewTrackedApps.adapter = AppTrackingListAdapter(this, trackedList, databaseResources)
             listViewTrackedApps.setOnItemClickListener { parent, view, position, id ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 Toast.makeText(this, trackedList[position].appTrPackages, Toast.LENGTH_SHORT).show()
@@ -102,8 +108,9 @@ class TrackerActivity : AppCompatActivity() {
         alarmManager.set(AlarmManager.RTC_WAKEUP, convertDateToCalendar(dateOfNotif).timeInMillis, pendingIntent)
 
     }
-    private fun getNotification(content: String): Notification {
+    private fun getNotification(content: String, j: Int): Notification {
         val notificationMessage : String = ("Remember to use " + content + " as you have not used it recently")
+        val NOTIFICATION_CHANNEL_ID = (j + 10000).toString()
         var notification =  Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_activity_tracker_round)
             .setContentTitle("Notification for " + content)
@@ -113,9 +120,9 @@ class TrackerActivity : AppCompatActivity() {
         notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
         return notification
     }
-    fun cancelNotifications(id: Int, tag: String?) {
+    fun cancelNotifications(id: Int, tag: String) {
         val notificationManager = applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancel(tag, id)
+        notificationManager.cancel(tag, (id+10000))
     }
 
     private fun convertLongToTime(lastTimeUsed: Long): String {
@@ -136,13 +143,13 @@ class TrackerActivity : AppCompatActivity() {
         calendar.add(Calendar.HOUR, hours)
         return calendar.time
     }
-    private fun dayDifference(dateToCheck: Date): String {
+/*    private fun dayDifference(dateToCheck: Date): String {
         val formater = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH)
         val currentDate: Date = formater.parse(convertLongToTime(System.currentTimeMillis()))
         val difference: Long = kotlin.math.abs(currentDate.time - dateToCheck.time)
         val differenceDates = difference / (24 * 60 * 60 * 1000)
         return differenceDates.toString()
-    }
+    }*/
     private fun getInstalledApps(): MutableList<AppList> {
         var appsList: MutableList<AppList> = java.util.ArrayList()
         val appListPacks: List<PackageInfo> = packageManager.getInstalledPackages(0)
@@ -179,8 +186,7 @@ class TrackerActivity : AppCompatActivity() {
         return try {
             val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
             val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-            var mode = 0
-            mode = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
+            val mode: Int = appOpsManager.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
             mode == AppOpsManager.MODE_ALLOWED
         } catch (e: Exception) {
             false
@@ -192,27 +198,23 @@ class TrackerActivity : AppCompatActivity() {
         return true
     }
 
-    class AppTrackingListAdapter(private val appCtx: Context, private val customizedList: MutableList<Trackers>) : BaseAdapter() {
+    class AppTrackingListAdapter(private val appCtx: Context, private val customizedList: MutableList<Trackers>, private var databaseResources: DatabaseResources) : BaseAdapter() {
         private lateinit var icon: ImageView
         private lateinit var appName: TextView
-        private lateinit var packageName: TextView
         private lateinit var appDateLastUsed: TextView
         private lateinit var appUntilNotification: TextView
         private lateinit var appNotificationLimit: TextView
-        private lateinit var editTracker: Button
-        private lateinit var deleteTracker: Button
+        private lateinit var btnEditTracker: Button
+        private lateinit var btnDeleteTracker: Button
         override fun getCount(): Int {
             return customizedList.size
         }
-
         override fun getItem(position: Int): Any {
             return position
         }
-
         override fun getItemId(position: Int): Long {
             return position.toLong()
         }
-
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view: View = LayoutInflater.from(appCtx).inflate(R.layout.custom_apps_tracking_layout, parent, false)
             icon = view.findViewById(R.id.app_t_icon)
@@ -220,28 +222,32 @@ class TrackerActivity : AppCompatActivity() {
             appDateLastUsed = view.findViewById(R.id.app_t_date_last_used)
             appUntilNotification = view.findViewById(R.id.app_t_time_notification)
             appNotificationLimit = view.findViewById(R.id.app_t_notification_limit)
-            editTracker = view.findViewById(R.id.btn_T_Edit)
-            deleteTracker = view.findViewById(R.id.btn_T_Delete)
+            btnEditTracker = view.findViewById(R.id.btn_t_Edit)
+            btnDeleteTracker = view.findViewById(R.id.btn_t_Delete)
             icon.setImageDrawable(customizedList[position].appTrIcon)
             appName.text = customizedList[position].appTrName
-            packageName.text = customizedList[position].appTrPackages
             appDateLastUsed.text =("Time App Last Used: " + convertLongToTimeAdapter(customizedList[position].appTrDateLastUsed))
-            appNotificationLimit.text = ("Frequency "+ appName + "needs to be used by: " + customizedList[position].appTrWeeks + " weeks, " + customizedList[position].appTrDays + " days, "  + customizedList[position].appTrHours + " hours")
-            appUntilNotification.text = ("Time Until " + appName + "needs to be used: "+ convertDateToStringAdapter(dateOfNotificationAdapter(customizedList[position].appTrDateLastUsed, customizedList[position].appTrWeeks, customizedList[position].appTrDays, customizedList[position].appTrHours)))
+            appUntilNotification.text = ("Time Until " + customizedList[position].appTrName + "needs to be used: "+ convertDateToStringAdapter(dateOfNotificationAdapter(customizedList[position].appTrDateLastUsed, customizedList[position].appTrWeeks, customizedList[position].appTrDays, customizedList[position].appTrHours)))
+            appNotificationLimit.text = ("Frequency "+ customizedList[position].appTrName + "needs to be used by: " + customizedList[position].appTrWeeks + " weeks, " + customizedList[position].appTrDays + " days, "  + customizedList[position].appTrHours + " hours")
+            btnDeleteTracker.setOnClickListener  {
+                databaseResources.deleteTracker(databaseResources.getAppTracker(customizedList[position].appTrName))
+            }
+/*            btnEditTracker.setOnClickListener {
+                val intent = Intent(this, EditTrackerActivity::class.java)
+                intent.putExtra("APPNAME", customizedList[position].appTrName)
+                startActivity(intent)
+            }*/
             return view
         }
-
         private fun convertLongToTimeAdapter(lastTimeUsed: Long): String {
             val date: Date = Date(lastTimeUsed)
             val formater = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH)
             return formater.format(date)
         }
-
         private fun convertDateToStringAdapter(date: Date) : String {
             val formater = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH)
             return formater.format(date)
         }
-
         private fun dateOfNotificationAdapter(dateAppLastUsed: Long, weeks: Int, days: Int, hours: Int ): Date {
             val date: Date = Date(dateAppLastUsed)
             val calendar = Calendar.getInstance()
@@ -252,17 +258,5 @@ class TrackerActivity : AppCompatActivity() {
             val datePlusTracker: Date = calendar.time
             return datePlusTracker
         }
-
-/*        fun isTimeAlert(dateToCheck: Long): Long {
-            val formater = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH)
-//            cal.add(Calendar.YEAR, -1)
-            val currentDate = System.currentTimeMillis()
-            val date1: Date = formater.parse(convertLongToTime(currentDate))
-            val date2: Date = formater.parse(convertLongToTime(dateToCheck))
-            val difference: Long = kotlin.math.abs(date1.time - date2.time)
-            val differenceDates = difference / (24 * 60 * 60 * 1000)
-//            val dayDifference = differenceDates.toString()
-            return differenceDates
-        }*/
     }
 }
