@@ -230,7 +230,7 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         val query = "SELECT * FROM " + TABLE_TRACKERS + " WHERE " + COLUMN_APP_NAME + " = '" + appName + "'"
         val db = this.writableDatabase
         val cursor = db.rawQuery(query, null)
-        var tracker: Tracker? = null
+        var tracker: Tracker = Tracker(0, "", "", 0, 0, 0, 0)
         if (cursor.moveToFirst()) {
             cursor.moveToFirst()
             val appId = Integer.parseInt(cursor.getString(0))
