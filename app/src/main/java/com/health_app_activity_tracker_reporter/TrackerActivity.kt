@@ -85,16 +85,6 @@ class TrackerActivity : AppCompatActivity() {
 
             //custom View for layout
             listViewTrackedApps.adapter = AppTrackingListAdapter(this, trackedList, databaseResources)
-/*            listViewTrackedApps.setOnItemClickListener { parent, view, position, id ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                Toast.makeText(this, trackedList[position].appTrPackages, Toast.LENGTH_SHORT).show()
-                startActivity(intent)
-            }*/
-/*            listViewTrackedApps.setOnItemClickListener {
-                val intentDel = Intent(applicationContext, TrackerActivity::class.java)
-                intentDel.putExtra("APPNAME", customizedList[position].appTrName)
-                startActivity(intentDel)
-            }*/
         } else {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             Toast.makeText(applicationContext, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()

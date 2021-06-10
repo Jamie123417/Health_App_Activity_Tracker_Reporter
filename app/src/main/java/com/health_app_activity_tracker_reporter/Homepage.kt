@@ -1,6 +1,8 @@
 package com.health_app_activity_tracker_reporter
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.widget.Button
@@ -16,6 +18,9 @@ class Homepage : AppCompatActivity() {
     private lateinit var btnLogOut : Button
     private lateinit var textHomepageName: TextView
     private lateinit var databaseResources: DatabaseResources
+    private var userEmail = ""
+    private var userName = ""
+    private val sharedPrefFile = "usernamesharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,8 +28,8 @@ class Homepage : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
 
-        val userEmail = intent.getStringExtra("EMAIL").toString()
-        val userName = intent.getStringExtra("USERNAME").toString()
+        userEmail = intent.getStringExtra("EMAIL").toString()
+        userName = intent.getStringExtra("USERNAME").toString()
 
         btnLogOut = findViewById(R.id.btnLogOut)
 
@@ -33,12 +38,33 @@ class Homepage : AppCompatActivity() {
         val btnActivityTracker = findViewById<LinearLayout>(R.id.activityTracker)
         val btnAddAppToTracker = findViewById<LinearLayout>(R.id.activityAddAppsToTracker)
         textHomepageName = findViewById(R.id.textName)
+
+        val sharedPreferences: SharedPreferences = this.getSharedPreferences(sharedPrefFile,Context.MODE_PRIVATE)
+
         var userFirstName : String = ""
         if (userEmail != "null") {
             databaseResources = DatabaseResources(this)
             val userDetails = databaseResources.getUserDetailsEmail(userEmail)!!
             userFirstName = userDetails.firstName.toString()
+
+            userName = userDetails.userName.toString()
+
+            val editor:SharedPreferences.Editor =  sharedPreferences.edit()
+            editor.putString("user_name_key",userName)
+            editor.apply()
+            editor.commit()
         } else if (userName != "null") {
+            databaseResources = DatabaseResources(this)
+            val userDetails = databaseResources.getUserDetailsUserName(userName)!!
+            userFirstName = userDetails.firstName.toString()
+
+            val editor:SharedPreferences.Editor =  sharedPreferences.edit()
+            editor.putString("user_name_key",userName)
+            editor.apply()
+            editor.commit()
+        } else {
+            val sharedNameValue = sharedPreferences.getString("user_name_key","defaultname")
+            userName = sharedNameValue.toString()
             databaseResources = DatabaseResources(this)
             val userDetails = databaseResources.getUserDetailsUserName(userName)!!
             userFirstName = userDetails.firstName.toString()
@@ -69,10 +95,12 @@ class Homepage : AppCompatActivity() {
         }
         btnActivityTracker.setOnClickListener {
             val intent = Intent(this, TrackerActivity::class.java)
+            intent.putExtra("USERNAME", userName)
             startActivity(intent)
         }
         btnAddAppToTracker.setOnClickListener {
             val intent = Intent(this, AddAppToTrackerActivity::class.java)
+            intent.putExtra("USERNAME", userName)
             startActivity(intent)
         }
         btnLogOut.setOnClickListener {

@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import com.example.health_app_activity_tracker_reporter.R
 import com.health_app_activity_tracker_reporter.classes.Tracker
-import com.health_app_activity_tracker_reporter.classes.User
 import com.health_app_activity_tracker_reporter.resources.DatabaseResources
 
 class EditTrackerActivity : AppCompatActivity() {
