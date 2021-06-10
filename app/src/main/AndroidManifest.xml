@@ -3,9 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.health_app_activity_tracker_reporter">
 
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES" tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission"/>
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission
+        android:name="android.permission.INSTALL_PACKAGES"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <application
         android:allowBackup="false"
@@ -13,7 +19,15 @@
         android:label="Health Activity Tracker"
         android:supportsRtl="true"
         android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter">
-        <activity android:name="com.health_app_activity_tracker_reporter.AddAppToTrackerActivity"
+        <activity
+            android:name="com.health_app_activity_tracker_reporter.EditTrackerActivity"
+            android:parentActivityName="com.health_app_activity_tracker_reporter.TrackerActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.health_app_activity_tracker_reporter.TrackerActivity" />
+        </activity>
+        <activity
+            android:name="com.health_app_activity_tracker_reporter.AddAppToTrackerActivity"
             android:parentActivityName="com.health_app_activity_tracker_reporter.Homepage">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -46,6 +60,7 @@
             android:theme="@style/Theme.Health_App_Activity_Tracker_Reporter.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -63,11 +78,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.health_app_activity_tracker_reporter.LoginActivity" />
         </activity>
+
         <receiver
             android:name="com.health_app_activity_tracker_reporter.resources.NotificationPublisher"
             android:enabled="true"
-            android:exported="false" >
-        </receiver>
+            android:exported="false"></receiver>
     </application>
 
 </manifest>

@@ -214,6 +214,19 @@ class DatabaseResources(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         db.close()
     }
 
+    fun updateTracker(tracker: Tracker) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_APP_NAME, tracker.appTName)
+        values.put(COLUMN_APP_PACKAGES, tracker.appTPackages)
+        values.put(COLUMN_APP_DLU, tracker.appTDateLastUsed)
+        values.put(COLUMN_APP_WEEKS, tracker.appWeeks)
+        values.put(COLUMN_APP_DAYS, tracker.appDays)
+        values.put(COLUMN_APP_HOURS, tracker.appHours)
+        db.update(TABLE_TRACKERS,values, COLUMN_APP_ID + " = ?",arrayOf(java.lang.String.valueOf(tracker.trackID)))
+        db.close()
+    }
+
     fun checkAppTracking(appName: String): Boolean {
         val columns = arrayOf(COLUMN_APP_ID)
         val db = this.readableDatabase

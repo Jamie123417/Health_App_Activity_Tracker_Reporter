@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.SystemClock
+import android.provider.ContactsContract.Profile
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.Menu
@@ -20,10 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.health_app_activity_tracker_reporter.R
-import com.google.android.material.snackbar.Snackbar
 import com.health_app_activity_tracker_reporter.classes.AppList
 import com.health_app_activity_tracker_reporter.classes.Tracker
 import com.health_app_activity_tracker_reporter.classes.Trackers
@@ -33,6 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Locale
 
+
 class TrackerActivity : AppCompatActivity() {
     private lateinit var listViewTrackedApps: ListView
     private lateinit var textViewTrackedAppsNo: TextView
@@ -41,6 +40,7 @@ class TrackerActivity : AppCompatActivity() {
     private var trackedAppsData: MutableList<Tracker> = ArrayList()
     private var userInsAppsList: MutableList<AppList> = ArrayList()
 //    private val notification_channel_id = "activityTrackers"
+    var buttonClicked : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,14 +90,14 @@ class TrackerActivity : AppCompatActivity() {
                 Toast.makeText(this, trackedList[position].appTrPackages, Toast.LENGTH_SHORT).show()
                 startActivity(intent)
             }*/
-            listViewTrackedApps.setOnClickListener {
-                val intent = intent
-                finish()
-                startActivity(intent)
-            }
+/*            listViewTrackedApps.setOnItemClickListener {
+                val intentDel = Intent(applicationContext, TrackerActivity::class.java)
+                intentDel.putExtra("APPNAME", customizedList[position].appTrName)
+                startActivity(intentDel)
+            }*/
         } else {
             val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-            Toast.makeText(this, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Please Enable Usage access for this app in Settings", Toast.LENGTH_SHORT).show()
             startActivity(intent)
         }
     }
@@ -126,7 +126,7 @@ class TrackerActivity : AppCompatActivity() {
         notification.flags = notification.flags or Notification.FLAG_AUTO_CANCEL
         return notification
     }
-    fun cancelNotifications(id: Int, tag: String) {
+    private fun cancelNotifications(id: Int, tag: String) {
         val notificationManager = applicationContext.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(tag, (id+10000))
     }
@@ -136,7 +136,7 @@ class TrackerActivity : AppCompatActivity() {
         val formater = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH)
         return formater.format(date)
     }
-    fun convertDateToCalendar(date: Date): Calendar {
+    private fun convertDateToCalendar(date: Date): Calendar {
         val calendar = Calendar.getInstance()
         calendar.time = date
         return calendar
@@ -241,11 +241,11 @@ class TrackerActivity : AppCompatActivity() {
             btnDeleteTracker.setOnClickListener  {
                 databaseResources.deleteTracker(databaseResources.getAppTracker(customizedList[position].appTrName))
             }
-/*            btnEditTracker.setOnClickListener {
-                val intent = Intent(this, EditTrackerActivity::class.java)
-                intent.putExtra("APPNAME", customizedList[position].appTrName)
-                startActivity(intent)
-            }*/
+            btnEditTracker.setOnClickListener {
+                val intentDel = Intent(parent.context, EditTrackerActivity::class.java)
+                intentDel.putExtra("APPNAME", customizedList[position].appTrName)
+                parent.context.startActivity(intentDel)
+            }
             return view
         }
         private fun convertLongToTimeAdapter(lastTimeUsed: Long): String {
