@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -84,9 +85,14 @@ class TrackerActivity : AppCompatActivity() {
 
             //custom View for layout
             listViewTrackedApps.adapter = AppTrackingListAdapter(this, trackedList, databaseResources)
-            listViewTrackedApps.setOnItemClickListener { parent, view, position, id ->
+/*            listViewTrackedApps.setOnItemClickListener { parent, view, position, id ->
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 Toast.makeText(this, trackedList[position].appTrPackages, Toast.LENGTH_SHORT).show()
+                startActivity(intent)
+            }*/
+            listViewTrackedApps.setOnClickListener {
+                val intent = intent
+                finish()
                 startActivity(intent)
             }
         } else {
@@ -150,23 +156,26 @@ class TrackerActivity : AppCompatActivity() {
         val differenceDates = difference / (24 * 60 * 60 * 1000)
         return differenceDates.toString()
     }*/
+
+    //fills array on installed apps
     private fun getInstalledApps(): MutableList<AppList> {
-        var appsList: MutableList<AppList> = java.util.ArrayList()
-        val appListPacks: List<PackageInfo> = packageManager.getInstalledPackages(0)
-        for (i in appListPacks.indices) {
-            val packageInfo = appListPacks[i]
-            if (!isSystemPackage(packageInfo)) {
-                val appName = packageInfo.applicationInfo.loadLabel(packageManager).toString()
-                val icon = packageInfo.applicationInfo.loadIcon(packageManager)
-                val packages = packageInfo.applicationInfo.packageName
-                val dateLastUsed = getAppDateLastUsed(packages)
-                appsList.add(AppList(appName, icon, packages, dateLastUsed))
+        var appsList: MutableList<AppList> = ArrayList<AppList>()
+        val appPacks: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+        for (i in appPacks.indices) {
+            val packageNo = appPacks[i]
+            if (isSystemPackage(packageNo)) {
+                val newInfo = AppList("", ColorDrawable(Color.TRANSPARENT), "", 0)
+                newInfo.appName = packageNo.applicationInfo.loadLabel(packageManager).toString()
+                newInfo.appIcon = packageNo.applicationInfo.loadIcon(packageManager)
+                newInfo.appPackages = packageNo.applicationInfo.packageName
+                newInfo.dateLastUsed = getAppDateLastUsed(newInfo.appPackages)
+                appsList.add(newInfo)
             }
         }
         return appsList
     }
     private fun isSystemPackage(pkgInfo: PackageInfo): Boolean {
-        return pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+        return (pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
     }
     private fun getAppDateLastUsed(packageName: String): Long {
         val cal = Calendar.getInstance()
@@ -180,7 +189,7 @@ class TrackerActivity : AppCompatActivity() {
                 return (dateLastUsed)
             }
         }
-        return 0
+        return System.currentTimeMillis()
     }
     private fun checkUsageStatsPermission(): Boolean {
         return try {
@@ -227,8 +236,8 @@ class TrackerActivity : AppCompatActivity() {
             icon.setImageDrawable(customizedList[position].appTrIcon)
             appName.text = customizedList[position].appTrName
             appDateLastUsed.text =("Time App Last Used: " + convertLongToTimeAdapter(customizedList[position].appTrDateLastUsed))
-            appUntilNotification.text = ("Time Until " + customizedList[position].appTrName + "needs to be used: "+ convertDateToStringAdapter(dateOfNotificationAdapter(customizedList[position].appTrDateLastUsed, customizedList[position].appTrWeeks, customizedList[position].appTrDays, customizedList[position].appTrHours)))
-            appNotificationLimit.text = ("Frequency "+ customizedList[position].appTrName + "needs to be used by: " + customizedList[position].appTrWeeks + " weeks, " + customizedList[position].appTrDays + " days, "  + customizedList[position].appTrHours + " hours")
+            appUntilNotification.text = ("Time Until " + customizedList[position].appTrName + " needs to be used: "+ convertDateToStringAdapter(dateOfNotificationAdapter(customizedList[position].appTrDateLastUsed, customizedList[position].appTrWeeks, customizedList[position].appTrDays, customizedList[position].appTrHours)))
+            appNotificationLimit.text = ("Frequency "+ customizedList[position].appTrName + " needs to be used by: " + customizedList[position].appTrWeeks + " weeks, " + customizedList[position].appTrDays + " days, "  + customizedList[position].appTrHours + " hours")
             btnDeleteTracker.setOnClickListener  {
                 databaseResources.deleteTracker(databaseResources.getAppTracker(customizedList[position].appTrName))
             }

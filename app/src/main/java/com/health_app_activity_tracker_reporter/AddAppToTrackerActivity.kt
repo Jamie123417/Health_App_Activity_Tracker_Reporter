@@ -16,6 +16,9 @@ import android.content.pm.PackageInfo
 import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.provider.Settings
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -108,31 +111,31 @@ class AddAppToTrackerActivity : AppCompatActivity() {
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (currentFocus != null) {
-            val imm: InputMethodManager =
-                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm: InputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
     }
 
+    //fills array on installed apps
     private fun getInstalledApps(): MutableList<AppList> {
-        var appsList: MutableList<AppList> = ArrayList()
-        val appListPacks: List<PackageInfo> = packageManager.getInstalledPackages(0)
-        for (i in appListPacks.indices) {
-            val packageInfo = appListPacks[i]
-            if (!isSystemPackage(packageInfo)) {
-                val appName = packageInfo.applicationInfo.loadLabel(packageManager).toString()
-                val icon = packageInfo.applicationInfo.loadIcon(packageManager)
-                val packages = packageInfo.applicationInfo.packageName
-                val dateLastUsed = getAppDateLastUsed(packages)
-                appsList.add(AppList(appName, icon, packages, dateLastUsed))
+        var appsList: MutableList<AppList> = ArrayList<AppList>()
+        val appPacks: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+        for (i in appPacks.indices) {
+            val packageNo = appPacks[i]
+            if (isSystemPackage(packageNo)) {
+                val newInfo = AppList("", ColorDrawable(Color.TRANSPARENT), "", 0)
+                newInfo.appName = packageNo.applicationInfo.loadLabel(packageManager).toString()
+                newInfo.appIcon = packageNo.applicationInfo.loadIcon(packageManager)
+                newInfo.appPackages = packageNo.applicationInfo.packageName
+                newInfo.dateLastUsed = getAppDateLastUsed(newInfo.appPackages)
+                appsList.add(newInfo)
             }
         }
         return appsList
     }
-
     private fun isSystemPackage(pkgInfo: PackageInfo): Boolean {
-        return pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+        return (pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 1
     }
 
     private fun getAppDateLastUsed(packageName: String): Long {
@@ -147,7 +150,7 @@ class AddAppToTrackerActivity : AppCompatActivity() {
                 return (dateLastUsed)
             }
         }
-        return 0
+        return System.currentTimeMillis()
     }
 
 }
